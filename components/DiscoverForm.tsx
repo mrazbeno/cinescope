@@ -1,0 +1,388 @@
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Ellipsis } from 'lucide-react';
+import { Separator } from "@/components/ui/separator"
+import { Calendar } from "@/components/ui/calendar"
+import { CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
+import { useRouter } from 'next/navigation';
+import { cn } from "@/lib/utils"
+import * as z from "zod"
+import * as React from "react"
+import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ComboboxField } from "./util/ComboBoxField";
+import { Option } from "./util/ComboBoxField";
+import { sortByOptions } from "@/lib/TMDBTypes"
+import { flattenObject } from "@/lib/utils"
+import GenreSelector from "./GenreSelector"
+
+const sortByEnum = z.enum(sortByOptions.map(opt => opt.value) as [string, ...string[]])
+
+const DiscoverSchema = z.object({
+    vote_average: z
+        .object({
+            gte: z
+                .coerce.number()
+                .min(0, "Minimum average of votes cannot be less than 0.")
+                .max(10, "Maximum average of votes cannot be more than 10.")
+                .optional(),
+            lte: z
+                .coerce.number()
+                .min(0, "Maximum average of votes cannot be less than 0.")
+                .max(10, "Maximum average of votes cannot be more than 10.")
+                .optional(),
+        })
+        .optional()
+        .refine(
+            (data) => !data || data.gte === undefined || data.lte === undefined || data.gte <= data.lte,
+            {
+                message: "Minimum vote cannot be greater than maximum vote.",
+                path: ["gte"], // indicates the field causing the error
+            }
+        ),
+
+    vote_count: z
+        .object({
+            gte: z.coerce.number().min(0, "Minimum number of votes cannot be less than 0.").optional(),
+            lte: z.coerce.number().min(0, "Maximum number of votes cannot be less than 0.").optional(),
+        })
+        .optional()
+        .refine(
+            (data) => !data || data.gte === undefined || data.lte === undefined || data.gte <= data.lte,
+            {
+                message: "Minimum vote count cannot be greater than maximum vote count.",
+                path: ["gte"],
+            }
+        ),
+
+    release_date: z
+        .object({
+            gte: z.coerce.date().optional(),
+            lte: z.coerce.date().optional(),
+        })
+        .optional()
+        .refine(
+            (data) => !data || data.gte === undefined || data.lte === undefined || data.gte <= data.lte,
+            {
+                message: "Start release date cannot be after end release date.",
+                path: ["gte"],
+            }
+        ),
+
+    with_original_language: z.string().optional(),
+    sort_by: sortByEnum.optional(),
+});
+
+type DiscoverQuery =
+    z.infer<typeof DiscoverSchema> & {
+        with_genres?: string;
+    };
+
+export default function DiscoverForm() {
+
+    const form = useForm<z.infer<typeof DiscoverSchema>>({
+        resolver: zodResolver(DiscoverSchema),
+        defaultValues: {
+            vote_count: { gte: undefined, lte: undefined },
+            vote_average: { gte: undefined, lte: undefined },
+            release_date: { gte: undefined, lte: undefined },
+            with_original_language: undefined,
+            sort_by: undefined,
+        },
+    })
+
+    const router = useRouter();
+
+
+    const onSubmit = (values: z.infer<typeof DiscoverSchema>) => {
+        const query: DiscoverQuery = { ...values };
+
+        const genres = Array.from(selectedGenres.values());
+        if (genres.length) {
+            query.with_genres =
+                genres.join(genreOperator === "OR" ? "|" : ",");
+        }
+
+        const payload = flattenObject(query);
+        router.push(`/discover?${new URLSearchParams(payload)}`);
+    };
+
+    const [genreOperator, setGenreOperator] = React.useState<"AND" | "OR">("AND");
+
+    // const activeGenres = React.useRef<Set<string>>(new Set());
+    const [selectedGenres, setSelectedGenres] = React.useState<string[]>([]);
+    const [availableGenres, setAvailableGenres] = React.useState(new Map<string, string>());
+
+    const [availableLanguages, setAvailableLanguages] = React.useState(new Map<string, Option>());
+
+    async function fetchGenres() {
+        const res = await fetch("/api/genres")
+        const parsed = await res.json()
+
+        const newGenres = new Map<string, string>()
+        for (const genre of parsed.genres) {
+            newGenres.set(genre.id, genre.name)
+        }
+
+        setAvailableGenres(newGenres)
+    }
+
+    async function fetchLanguages() {
+        const res = await fetch("/api/languages")
+        const parsed = await res.json()
+
+        const newLangs = new Map<string, Option>()
+        for (const lang of parsed) {
+            newLangs.set(lang.iso_639_1, {
+                value: lang.iso_639_1,
+                label: lang.english_name + (lang.name ? ` (${lang.name})` : ""),
+            })
+        }
+        setAvailableLanguages(newLangs)
+    }
+
+    React.useEffect(() => {
+        fetchGenres()
+        fetchLanguages()
+    }, []);
+
+    return <>
+        <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full grow gap-2">
+                <div className="flex gap-2">
+                    <section className="flex gap-4 flex-col grow">
+                        <section className="flex gap-2 items-end md:flex-row flex-col">
+                            <div className="flex items-center grow w-full">
+                                <FormField
+
+                                    control={form.control}
+                                    name="vote_average.gte"
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-col grow">
+                                            <FormLabel htmlFor="vote_avg_gte" className="font-normal">
+                                                Vote average minimum
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input min={0} step={0.2} max={10} placeholder="Min..." id="vote_avg_gte" type="number" {...field} value={field.value ?? ""}></Input>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <Ellipsis className="hidden md:block" />
+
+                            <div className="flex items-center grow w-full">
+                                <FormField
+                                    control={form.control}
+                                    name="vote_average.lte"
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-col grow">
+                                            <FormLabel htmlFor="vote_avg_lte" className="font-normal">
+                                                Vote average maximum
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input min={0} step={0.2} max={10} placeholder="Max..." id="vote_avg_lte" type="number" {...field} value={field.value ?? ""}></Input>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </section>
+
+                        <Separator className="grow"></Separator>
+
+                        <section className="flex gap-2 items-end md:flex-row flex-col">
+                            <div className="flex items-center grow w-full">
+                                <FormField
+                                    control={form.control}
+                                    name="vote_count.gte"
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-col grow">
+                                            <FormLabel htmlFor="vote_cnt_gte" className="font-normal">
+                                                Vote count minimum
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input min={0} step={100} placeholder="Min..." id="vote_cnt_gte" type="number"  {...field} value={field.value ?? ""}></Input>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <Ellipsis className="hidden md:block" />
+
+                            <div className="flex items-center grow w-full">
+                                <FormField
+                                    control={form.control}
+                                    name="vote_count.lte"
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-col grow">
+                                            <FormLabel htmlFor="vote_cnt.lte" className="font-normal">
+                                                Vote count maximum
+                                            </FormLabel>
+
+                                            <FormControl>
+                                                <Input placeholder="Max..." id="vote_cnt.lte" type="number" {...field} value={field.value ?? ""}></Input>
+                                            </FormControl>
+
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </section>
+
+                        <Separator className="grow"></Separator>
+
+                        <section className="flex gap-2 grow items-end md:flex-row flex-col">
+                            <FormField
+                                control={form.control}
+                                name="release_date.gte"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col grow w-full">
+                                        <FormLabel>
+                                            <div> Release date <i>from</i> </div>
+                                        </FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            " pl-3 text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    disabled={(date) =>
+                                                        date > new Date() || date < new Date("1900-01-01")
+                                                    }
+                                                    captionLayout="dropdown"
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <Ellipsis className="hidden md:block" />
+
+                            <FormField
+                                control={form.control}
+                                name="release_date.lte"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col grow w-full">
+                                        <FormLabel>
+                                            <div> Release date <i>to</i> </div>
+                                        </FormLabel>
+
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            " pl-3 text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    disabled={(date) =>
+                                                        date > new Date() || date < new Date("1900-01-01")
+                                                    }
+                                                    captionLayout="dropdown"
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </section>
+
+                        <Separator className="grow"></Separator>
+
+                        <section className="flex gap-2 md:flex-row flex-col items-end grow">
+                            <ComboboxField
+                                name="with_original_language"
+                                label="Original language"
+                                options={Array.from(availableLanguages.values())}
+                            />
+
+                            <ComboboxField
+                                name="sort_by"
+                                label="Sort by"
+                                options={sortByOptions}
+                            />
+                        </section>
+                    </section>
+
+                    <GenreSelector
+                        availableGenres={availableGenres}
+                        onChange={(selected, op) => {
+                            setSelectedGenres(selected);
+                            setGenreOperator(op);
+                        }}
+                    />
+                </div>
+
+                <div className="flex">
+                    <div className="flex grow justify-end">
+                        <Button type="submit" disabled={form.formState.isSubmitting}>
+                            {form.formState.isSubmitting ? "Searching..." : "Search"}
+                        </Button>
+                    </div>
+                </div>
+            </form >
+        </FormProvider >
+    </>
+}
