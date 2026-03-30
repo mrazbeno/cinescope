@@ -54,7 +54,7 @@ function ButtonLink(
 }
 
 export async function generateMetadata(
-    { params }: { params: { id: string } }
+    { params }: any
 ): Promise<Metadata> {
 
     const movieId = (await params).id
@@ -103,7 +103,7 @@ export async function generateMetadata(
     }
 }
 
-export default async function Page({ params }: { params: { id: string } }) {
+export default async function Page({ params }: any) {
     const movieId = (await params).id;
     let detail: TMDBMovieDetail | null = null;
     let credits: TMDBMovieCreditsResponse | null = null;

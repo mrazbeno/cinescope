@@ -6,7 +6,7 @@ type Props = {
     searchParams: Record<string, string | string[] | undefined>;
 };
 
-export default async function MyPage({ searchParams }: Props) {
+export default async function DiscoverPage({ searchParams }: any) {
     const query = await buildQueryString(searchParams);
     const targetURL = `https://api.themoviedb.org/3/discover/movie?${query.toString()}`;
     return (
@@ -17,7 +17,7 @@ export default async function MyPage({ searchParams }: Props) {
     );
 }
 
-export async function generateMetadata({ searchParams }: Props) {
+export async function generateMetadata({ searchParams }: any) {
     const params = await buildQueryString(searchParams);
     const page = params.get("page") ?? "1";
     const sort = params.get("sort_by") ?? "popularity.desc";

@@ -30,11 +30,11 @@ const LoginForm = ({
     setLoading(true);
     setError(null);
     try {
-
+        
       const res = await supabase.auth.signInWithPassword({ email, password })
 
       if (res && (res as any).error) {
-        setError((res as any).error || "Invalid credentials");
+        setError((res as any).error.message || "Invalid credentials");
       } else {
         // successful sign in
         router.push("/my-filter");
