@@ -6,10 +6,10 @@ import {
   Carousel, CarouselContent, CarouselItem,
 } from "@/components/ui/carousel"
 import { TMDBMovieSummary } from "@/lib/TMDBTypes"
-import MoviePoster from "../MoviePoster"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ArrowUp, ArrowDown } from "lucide-react"
 import clsx from "clsx"
+import CarouselPoster from "./CarouselPoster.client"
 
 type FeaturedCarouselClientProps = {
   isDirForward: boolean
@@ -19,22 +19,21 @@ type FeaturedCarouselClientProps = {
 }
 
 export function FeaturedCarouselClient(props: FeaturedCarouselClientProps) {
-  // const plugin = React.useRef(
-  //   Autoplay({ speed: 1, startDelay: 0, stopOnInteraction: true, direction: (props.isDirForward ? "forward" : "backward") })
-  // )
 
   const autoplay = React.useMemo(
   () => Autoplay({ speed: 1, startDelay: 0, stopOnInteraction: true, direction: props.isDirForward ? "forward" : "backward" }),
   [props.isDirForward]
 )
 
+const plugins = React.useMemo(() => [autoplay], [autoplay]);
+
 
   return (
-    <div aria-live="polite" className="h-full relative flex select-none">
+    <div className="h-full relative flex select-none">
       <Carousel
         opts={{ align: "start", loop: true }}
         orientation="vertical"
-        plugins={[autoplay]}
+        plugins={plugins}
         className="relative h-full *:h-full"
         onMouseEnter={autoplay.stop}
         onMouseLeave={() => {autoplay.play(1000) }}
@@ -46,13 +45,10 @@ export function FeaturedCarouselClient(props: FeaturedCarouselClientProps) {
                 {props.movieSummaries[idx] == undefined ? (
                   <Skeleton className="h-full aspect-[2/3]" />
                 ) : (
-                  <MoviePoster
+                  <CarouselPoster
                     posterPath={props.movieSummaries[idx].poster_path}
                     title={props.movieSummaries[idx].title}
                     id={props.movieSummaries[idx].id}
-                    placement={idx + 1}
-                    allowRedirection
-                    posterSize="w342"
                   />
                 )}
               </div>

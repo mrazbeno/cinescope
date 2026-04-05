@@ -1,6 +1,7 @@
-> ***An older project of mine.***
 
 # CineScope
+
+**A personal project.**
 
 A frontend for discovering and searching for movies using the TMDB API. Offers accounts, served by SupaBase, for managing a personal collection of them. Also includes featured movie lists, rich details and poster first record representation. 
 
@@ -15,20 +16,57 @@ Built with Next.js, Tailwind, React, zod, Shadcn, SupaBase, TMDB API.
 
 ## Quick Start
 
+
+### Core
+
 1. Clone this repository.
 
 2. Copy `.env.local.example` to `.env.local` and set:
-   - `TMDB_API_READ_TOKEN`
-   - `NEXT_PUBLIC_APP_URL`
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
+   - `TMDB_API_READ_TOKEN` to your valid token
 
 3. Install packages with `npm install`.
-4. Start dev server with  `npm run dev`.
-3. Open `http://localhost:3000`.
+
+### Local database setup
+
+0. Ensure Docker is running.
+
+1. Run:
+
+```bash
+npm run db:init
+```
+
+2. Copy the local Supabase URL and Secret auth key into `.env.local` (sb_secret_...)
+
+3. (Optional) Seed 3 users with movies into the db with:
+```bash
+npm run db:seed
+```
+
+### Finally
+
+1. Start dev server with:
+```bash
+npm run dev
+```
+
+2. Open `http://localhost:3000`.
 
 ## Demo
-A live demo is available [here]().
+A live demo is available [here](https://cinescope-nu-six.vercel.app/). It is hosted on Vercel and Supabase.
+
+## Notes & Future improvements
+- **Not actively developed**
+- Carousel rendering tweaks
+- Carousel start/stop feature
+- Personal catalog sharing
+- More intuitive forms (tooltips?)
 
 ## Screenshots
-
+![HOME](/assets/README_hero_home.png)
+![DISCOVER](/assets/README_discover_form.png)
+![QUERY](/assets/README_query.png)
+![DETAIL_TOP](/assets/README_detail_top.png)
+![DETAIL_BOTTOM](/assets/README_detail_bottom.png)
+![CATALOG](/assets/README_personal_catalog.png)
+![EMAIL](/assets/README_email_light.png)

@@ -35,7 +35,7 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "components/.MoviePoster.tsx.bak", "components/MovieGrid.client.tsx.bak", "components/MovieGrid.server.tsx.bak"  ],
   "exclude": [
     "node_modules"
   ]

@@ -1,8 +1,8 @@
 "use client"
 
 import Link from "next/link";
-import ThemeToggler from "./util/ThemeToggler";
-import SessionStatus from "./auth/sessionStatus";
+import ThemeToggler from "../util/ThemeToggler";
+import SessionStatus from "../auth/sessionStatus";
 
 export default function HeaderBar() {
     return (

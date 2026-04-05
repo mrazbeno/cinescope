@@ -1,3 +1,4 @@
+import { getTMDBImage } from "@/lib/tmbd";
 import { TMDBMovieSummary } from "@/lib/TMDBTypes";
 
 export default async function MovieListJsonLd({targetURL}: {targetURL: string}) {
@@ -15,7 +16,9 @@ export default async function MovieListJsonLd({targetURL}: {targetURL: string}) 
         "itemListElement": items.map((m, idx) => ({
             "@type": "ListItem",
             "url": site ? `${site}/movie-details/${m.id}` : undefined,
-            "name": m.title
+            "name": m.title,
+            "position": idx + 1,
+            "image": getTMDBImage(m.poster_path)
         }))
     };
     return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList) }} />

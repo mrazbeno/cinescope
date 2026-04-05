@@ -1,8 +1,9 @@
-'use client';
- 
-import { Button } from '@/components/ui/button';
-import { useEffect } from 'react';
- 
+"use client";
+
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+
 export default function Error({
   error,
   reset,
@@ -11,19 +12,13 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error(error);
-  }, [error]);
- 
+    toast.error("Failed to load discover results.");
+  }, []);
+
   return (
-    <main className="flex h-full flex-col items-center justify-center">
-      <h2 className="text-center">Something went wrong!</h2>
-      <Button
-        onClick={
-          () => reset()
-        }
-      >
-        Try again
-      </Button>
+    <main className="flex flex-col items-center justify-center gap-4 p-8">
+      <p>Something went wrong while loading results.</p>
+      <Button onClick={() => reset()}>Try again</Button>
     </main>
   );
 }

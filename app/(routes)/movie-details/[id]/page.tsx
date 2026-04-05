@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import MoviePoster from "@/components/MoviePoster";
+import MoviePoster from "@/components/movie/MoviePoster";
 import { TMDBMovieDetail, TMDBMovieCreditsResponse } from "@/lib/TMDBTypes";
 import { Badge } from "@/components/ui/badge";
 import { getTMDBImage } from "@/lib/tmbd";
@@ -172,8 +172,8 @@ export default async function Page({ params }: any) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <main className="flex flex-col w-full p-4 overflow-auto">
-                <article className="w-full max-w-screen-lg mx-auto">
+            <main className="flex flex-col w-full grow relative p-0 overflow-auto">
+                <article className="w-full absolute top-0 p-4">
                     <header className="flex items-start justify-between gap-4 mb-6">
                         <div>
                             <h1 className="text-2xl md:text-3xl font-semibold">

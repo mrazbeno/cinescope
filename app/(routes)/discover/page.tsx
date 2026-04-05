@@ -1,6 +1,7 @@
-import MovieListJsonLd from "@/components/MovieListJsonLd";
-import MovieQueryResults from "@/components/MovieQueryResults";
+import MovieListJsonLd from "@/components/movie/MovieListJsonLd";
+import MovieQueryResults from "@/components/movie/MovieQueryResults";
 import { buildQueryString } from "@/lib/utils";
+import type { Metadata } from "next";
 
 type Props = {
     searchParams: Record<string, string | string[] | undefined>;
@@ -17,7 +18,7 @@ export default async function DiscoverPage({ searchParams }: any) {
     );
 }
 
-export async function generateMetadata({ searchParams }: any) {
+export async function generateMetadata({ searchParams }: any): Promise<Metadata> {
     const params = await buildQueryString(searchParams);
     const page = params.get("page") ?? "1";
     const sort = params.get("sort_by") ?? "popularity.desc";
@@ -41,5 +42,9 @@ export async function generateMetadata({ searchParams }: any) {
             title,
             description,
         },
+        robots: {
+            index: false,
+            follow: true
+        }
     };
 }

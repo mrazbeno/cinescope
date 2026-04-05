@@ -1,11 +1,9 @@
-"use client"
+"use client";
 
-import { Check, ChevronsUpDown } from "lucide-react"
-import { useFormContext } from "react-hook-form"
-import { cn } from "@/lib/utils"
-import {
-  Button
-} from "@/components/ui/button"
+import { Check, ChevronsUpDown } from "lucide-react";
+import { useFormContext } from "react-hook-form";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -13,7 +11,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   FormControl,
   FormField,
@@ -21,25 +19,26 @@ import {
   FormLabel,
   FormDescription,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 
 export type Option = {
-  label: string
-  value: string
-}
+  label: string;
+  value: string;
+};
 
 type ComboboxFieldProps = {
-  name: string
-  label: string
-  options: Option[]
-  description?: string
-  placeholder?: string
-}
+  name: string;
+  label: string;
+  options: Option[];
+  description?: string;
+  placeholder?: string;
+  disabled?: boolean;
+};
 
 export function ComboboxField({
   name,
@@ -47,25 +46,27 @@ export function ComboboxField({
   options,
   description,
   placeholder = "Select...",
+  disabled = false,
 }: ComboboxFieldProps) {
-  const { control, setValue } = useFormContext()
+  const { control, setValue } = useFormContext();
 
   return (
     <FormField
-
       control={control}
       name={name}
       render={({ field }) => (
         <FormItem className="flex flex-col grow w-full">
           <FormLabel>{label}</FormLabel>
+
           <Popover>
             <PopoverTrigger asChild>
               <FormControl>
                 <Button
                   variant="outline"
                   role="combobox"
+                  disabled={disabled}
                   className={cn(
-                    " justify-between",
+                    "justify-between",
                     !field.value && "text-muted-foreground"
                   )}
                 >
@@ -76,12 +77,15 @@ export function ComboboxField({
                 </Button>
               </FormControl>
             </PopoverTrigger>
+
             <PopoverContent className="w-[200px] p-0">
               <Command>
                 <CommandInput
                   placeholder="Search..."
                   className="h-9"
+                  disabled={disabled}
                 />
+
                 <CommandList>
                   <CommandEmpty>No results found.</CommandEmpty>
                   <CommandGroup>
@@ -89,7 +93,15 @@ export function ComboboxField({
                       <CommandItem
                         key={opt.value}
                         value={opt.label}
-                        onSelect={() => setValue(name, opt.value)}
+                        disabled={disabled}
+                        onSelect={() => {
+                          if (disabled) return;
+                          setValue(name, opt.value, {
+                            shouldDirty: true,
+                            shouldTouch: true,
+                            shouldValidate: true,
+                          });
+                        }}
                       >
                         {opt.label}
                         <Check
@@ -105,10 +117,11 @@ export function ComboboxField({
               </Command>
             </PopoverContent>
           </Popover>
+
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
         </FormItem>
       )}
     />
-  )
+  );
 }

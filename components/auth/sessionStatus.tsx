@@ -18,13 +18,10 @@ export default function SessionStatus() {
     async function logout() {
         const res = await supabase.auth.signOut()
 
-        // toast.error("ASADS")
-        // return;
         if (res.error !== null) {
             toast.error(res.error.message)
             return;
         }
-
 
         router.push("/")
     }

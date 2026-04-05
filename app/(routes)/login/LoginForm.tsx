@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,11 +16,12 @@ export interface LoginFormProps {
 
 const LoginForm = ({
   heading,
-  buttonText,
+  buttonText = "Sign in",
   signupText,
   signupUrl,
 }: LoginFormProps) => {
   const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,19 +29,21 @@ const LoginForm = ({
 
   const onLoginAttempt = async (e?: React.FormEvent) => {
     e?.preventDefault();
+    if (loading) return;
+
     setLoading(true);
     setError(null);
-    try {
-        
-      const res = await supabase.auth.signInWithPassword({ email, password })
 
-      if (res && (res as any).error) {
-        setError((res as any).error.message || "Invalid credentials");
-      } else {
-        // successful sign in
-        router.push("/my-filter");
+    try {
+      const res = await supabase.auth.signInWithPassword({ email, password });
+
+      if (res.error) {
+        setError(res.error.message || "Invalid credentials");
+        return;
       }
-    } catch (err) {
+
+      router.push("/my-filter");
+    } catch {
       setError("Sign in failed");
     } finally {
       setLoading(false);
@@ -47,48 +51,68 @@ const LoginForm = ({
   };
 
   return (
-      <div className="flex h-full items-center justify-center">
-        {/* Logo */}
-        <div className="flex flex-col items-center gap-6 justify-center">
-          <a href="#">
-            <div className="flex flex-row items-center gap-2">
-              <h1 className="text-3xl">CineScope</h1> - Find your next watch
-            </div>
-          </a>
-          <form onSubmit={onLoginAttempt} className="min-w-sm flex w-full max-w-sm flex-col items-center gap-y-4 rounded-md border-none px-6 py-8 ">
+    <div className="flex h-full items-center justify-center">
+      <div className="flex flex-col items-center justify-center gap-6">
+        <div className="flex flex-row items-center gap-2">
+          <h1 className="text-3xl">CineScope</h1> - Find your next watch
+        </div>
+
+        <form
+          onSubmit={onLoginAttempt}
+          className="relative min-w-sm flex w-full max-w-sm flex-col items-center gap-y-4 rounded-md border-none px-6 py-8"
+          aria-busy={loading}
+        >
+          <fieldset
+            disabled={loading}
+            className="flex w-full flex-col items-center gap-y-4 disabled:opacity-70"
+          >
             {heading && <h1 className="text-xl font-semibold">{heading}</h1>}
+
             <Input
               type="email"
               placeholder="Email"
               className="text-sm"
               required
               value={email}
-              onChange={(e: any) => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
             />
+
             <Input
               type="password"
               placeholder="Password"
               className="text-sm"
               required
               value={password}
-              onChange={(e: any) => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
-            {error && <div className="text-destructive text-sm w-full">{error}</div>}
+
+            {error && <div className="w-full text-sm text-destructive">{error}</div>}
+
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Signing in..." : buttonText}
             </Button>
-          </form>
-          <div className="text-muted-foreground flex justify-center gap-1 text-sm">
-            <p>{signupText}</p>
-            <a
+          </fieldset>
+        </form>
+
+        <div className="flex justify-center gap-1 text-sm text-muted-foreground">
+          <p>{signupText}</p>
+          {signupUrl ? (
+            <Link
               href={signupUrl}
-              className="text-primary font-medium hover:underline"
+              aria-disabled={loading}
+              className={[
+                "font-medium text-primary hover:underline",
+                loading ? "pointer-events-none opacity-50" : "",
+              ].join(" ")}
             >
               Sign up
-            </a>
-          </div>
+            </Link>
+          ) : (
+            <span className="font-medium text-primary">Sign up</span>
+          )}
         </div>
       </div>
+    </div>
   );
 };
 

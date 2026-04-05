@@ -28,8 +28,8 @@ export function MovieStatesFilters({
                 <Label>Included statuses for movies</Label>
                 <ToggleGroup
                     variant="outline"
-                    orientation="vertical"
-                    className="flex-col  w-full grow sm:flex-row sm:w-auto"
+                    // orientation="vertical"
+                    className="flex-col  w-full grow sm:w-auto xl:flex-row"
                     type="multiple"
                     spacing={1}
                     size={"sm"}
@@ -40,7 +40,7 @@ export function MovieStatesFilters({
                 >
                     {WatchStatusOptions.map((opt) => (
                         <ToggleGroupItem
-                            className="grow w-full sm:w-auto"
+                            className="grow w-full xl:w-auto"
                             key={opt.value}
                             value={opt.value}
                             aria-label={`Toggle ${opt.label}`}

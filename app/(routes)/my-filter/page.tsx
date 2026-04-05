@@ -15,8 +15,10 @@ import {
 } from './filters';
 import { useAuth } from '@/components/auth/authProvider';
 import PaginatorClient from '@/components/pagination/PaginatorClient';
-import { PaginationProvider } from '@/components/pagination/PaginationTransitionContext';
-import MovieGridClient, { MovieGridSkeleton } from '@/components/MovieGrid.client';
+import MovieGridClient, {
+  MovieGridClientSkeleton,
+} from '@/components/movie/MovieGridClient';
+
 
 function parsePage(search: string): number {
   const p = new URLSearchParams(search).get('page');
@@ -30,7 +32,6 @@ export default function MyPage() {
   const auth = useAuth();
 
   const search = searchParams.toString();
-
   const appliedFilter = React.useMemo(() => DecodeFilterFromURL(search), [search]);
   const currentPage = React.useMemo(() => parsePage(search), [search]);
 
@@ -49,14 +50,17 @@ export default function MyPage() {
   React.useEffect(() => {
     if (auth.loading || !auth.user) return;
 
+    
     let cancelled = false;
-
+    
     (async () => {
       try {
         setLoading(true);
-        setResp(null); 
+        setResp(null);
+        
+        if (auth.user == null) return;
 
-        const listResp = await fetchMyListPage(auth.user!.id, appliedFilter, currentPage);
+        const listResp = await fetchMyListPage(auth.user.id, appliedFilter, currentPage);
 
         if (!cancelled) setResp(listResp);
       } catch (e: any) {
@@ -84,7 +88,7 @@ export default function MyPage() {
   };
 
   return (
-    <main className="flex flex-col w-full h-full min-h-0 justify-start items-stretch py-3 px-8 gap-3">
+    <main className="flex flex-col w-full h-full min-h-0 justify-start items-stretch p-4 gap-3">
       <section className="flex flex-col gap-4 w-full">
         <MovieStatesFilters value={draftFilter} onChange={setDraftFilter} />
 
@@ -99,31 +103,39 @@ export default function MyPage() {
       </section>
 
       <section className="flex flex-col w-full h-full min-h-0 justify-start items-stretch gap-3">
-        <PaginationProvider>
-          <section className="relative flex flex-col w-full items-center justify-center shrink-0 gap-2">
-            {!resp ? (
-              <div className="text-sm text-muted-foreground">
-                Found <Skeleton className="inline-block align-middle h-4 w-16" /> results...
-              </div>
-            ) : (
-              <div>
-                Found <b>{resp.tmbdListResponse.total_results}</b> results...
-              </div>
-            )}
-          </section>
+        <section className="relative flex flex-col w-full items-center justify-center shrink-0 gap-2">
+          {!resp ? (
+            <div className="text-sm text-muted-foreground">
+              Found <Skeleton className="inline-block align-middle h-4 w-16" /> results...
+            </div>
+          ) : (
+            <div>
+              Found <b>{resp.tmbdListResponse.total_results}</b> results...
+            </div>
+          )}
+        </section>
 
-          <section className="flex flex-col flex-1 min-h-0 w-full">
-            {!resp ? <MovieGridSkeleton /> : <MovieGridClient  results={resp.tmbdListResponse.results} myListDetails={resp.myListDetails} />}
-          </section>
+        <section className="flex flex-col flex-1 min-h-0 w-full">
+          {!resp ? (
+            <MovieGridClientSkeleton />
+          ) : (
+            <MovieGridClient
+              results={resp.tmbdListResponse.results}
+              myListDetails={resp.myListDetails}
+            />
+          )}
+        </section>
 
-          <section className="flex w-full justify-center shrink-0">
-            {!resp ? (
-              <Skeleton className="w-1/2 h-8" />
-            ) : (
-              <PaginatorClient currentPage={resp.tmbdListResponse.page} totalPages={resp.tmbdListResponse.total_pages} />
-            )}
-          </section>
-        </PaginationProvider>
+        <section className="flex w-full justify-center shrink-0">
+          {!resp ? (
+            <Skeleton className="w-1/2 h-8" />
+          ) : (
+            <PaginatorClient
+              currentPage={resp.tmbdListResponse.page}
+              totalPages={resp.tmbdListResponse.total_pages}
+            />
+          )}
+        </section>
       </section>
     </main>
   );

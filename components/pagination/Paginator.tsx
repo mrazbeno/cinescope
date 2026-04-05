@@ -1,17 +1,18 @@
+import PaginatorClient from "./PaginatorClient";
 
-type PaginatorClientProps = {
-    currentPage: Promise<number>,
-    totalPages: Promise<number>,
+type PaginatorProps = {
+  currentPage: number;
+  totalPages: number;
 };
 
-import PaginatorClient from './PaginatorClient';
-
-export default async function Paginator(props: PaginatorClientProps) {
-
-    const currentPage = await props.currentPage;
-    const totalPages = await props.totalPages;
-
-    return (
-        <PaginatorClient currentPage={currentPage} totalPages={totalPages}></PaginatorClient>
-    );
+export default function Paginator({
+  currentPage,
+  totalPages,
+}: PaginatorProps) {
+  return (
+    <PaginatorClient
+      currentPage={currentPage}
+      totalPages={totalPages}
+    />
+  );
 }
