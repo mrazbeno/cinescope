@@ -193,7 +193,7 @@ export default function DiscoverForm() {
                     render={({ field }) => (
                       <FormItem className="flex flex-col grow">
                         <FormLabel htmlFor="vote_avg_gte" className="font-normal">
-                          Vote average minimum
+                          Minimum rating
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -213,7 +213,7 @@ export default function DiscoverForm() {
                   />
                 </div>
 
-                <Ellipsis className="hidden md:block" />
+                <div className="hidden md:flex items-center text-sm text-muted-foreground">to</div>
 
                 <div className="flex items-center grow w-full">
                   <FormField
@@ -222,18 +222,18 @@ export default function DiscoverForm() {
                     render={({ field }) => (
                       <FormItem className="flex flex-col grow">
                         <FormLabel htmlFor="vote_avg_lte" className="font-normal flex flex-row justify-between">
-                          Vote average maximum
+                          Maximum rating
 
                           <Tooltip>
-                          <TooltipTrigger asChild className="cursor-help">
-                            <CircleQuestionMark className="p-1 shrink-0" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>
-                              Vote average range is 0-10.
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
+                            <TooltipTrigger asChild className="cursor-help">
+                              <CircleQuestionMark className="p-1 shrink-0" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>
+                                Vote average range is 0-10.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
 
                         </FormLabel>
                         <FormControl>
@@ -265,7 +265,7 @@ export default function DiscoverForm() {
                     render={({ field }) => (
                       <FormItem className="flex flex-col grow">
                         <FormLabel htmlFor="vote_cnt_gte" className="font-normal">
-                          Vote count minimum
+                          Minimum votes
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -284,7 +284,7 @@ export default function DiscoverForm() {
                   />
                 </div>
 
-                <Ellipsis className="hidden md:block" />
+                <div className="hidden md:flex items-center text-sm text-muted-foreground">to</div>
 
                 <div className="flex items-center grow w-full">
                   <FormField
@@ -293,11 +293,13 @@ export default function DiscoverForm() {
                     render={({ field }) => (
                       <FormItem className="flex flex-col grow">
                         <FormLabel htmlFor="vote_cnt_lte" className="font-normal">
-                          Vote count maximum
+                          Maximum votes
                         </FormLabel>
 
                         <FormControl>
                           <Input
+                            min={0}
+                            step={100}
                             placeholder="Max..."
                             id="vote_cnt_lte"
                             type="number"
@@ -366,7 +368,7 @@ export default function DiscoverForm() {
                   )}
                 />
 
-                <Ellipsis className="hidden md:block" />
+                <div className="hidden md:flex items-center text-sm text-muted-foreground">to</div>
 
                 <FormField
                   control={form.control}
@@ -422,19 +424,23 @@ export default function DiscoverForm() {
               <Separator className="grow" />
 
               <section className="flex gap-2 md:flex-row flex-col items-end grow">
-                <ComboboxField
-                  disabled={isPending}
-                  name="with_original_language"
-                  label="Original language"
-                  options={Array.from(availableLanguages.values())}
-                />
+                <div className="min-w-0 basis-0  flex-1">
 
-                <ComboboxField
-                  disabled={isPending}
-                  name="sort_by"
-                  label="Sort by"
-                  options={sortByOptions}
-                />
+                  <ComboboxField
+                    disabled={isPending}
+                    name="with_original_language"
+                    label="Original language"
+                    options={Array.from(availableLanguages.values())}
+                  />
+                </div>
+                <div className="min-w-0 basis-0  flex-1">
+                  <ComboboxField
+                    disabled={isPending}
+                    name="sort_by"
+                    label="Sort by"
+                    options={sortByOptions}
+                  />
+                </div>
               </section>
             </section>
 

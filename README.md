@@ -53,14 +53,16 @@ npm run dev
 2. Open `http://localhost:3000`.
 
 ## Demo
-A live demo is available [here](https://cinescope-nu-six.vercel.app/). It is hosted on Vercel and Supabase.
+A live demo is available [here](https://cinescope-demo.vercel.app). It is hosted on Vercel and Supabase.
 
-## Notes & Future improvements
+## Notes
 - **Not actively developed**
+
+## Future improvements
+- OAuth / OIDC
 - Carousel rendering tweaks
 - Carousel start/stop feature
 - Personal catalog sharing
-- More intuitive forms (tooltips?)
 
 ## Screenshots
 ![HOME](/assets/README_hero_home.jpeg)
