@@ -52,11 +52,11 @@ export default function SearchForm() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col justify-center w-full max-w-md gap-6 p-4">
       <FormProvider {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col w-full grow gap-2"
+          className="flex flex-col w-full grow gap-2 "
           aria-busy={isPending}
         >
           <fieldset

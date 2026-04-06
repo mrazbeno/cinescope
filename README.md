@@ -1,8 +1,6 @@
 
 # CineScope
 
-**A personal project.**
-
 A frontend for discovering and searching for movies using the TMDB API. Offers accounts, served by SupaBase, for managing a personal collection of them. Also includes regional featured movie lists, rich details and poster first record representation. 
 
 Built with Next.js, Tailwind, React, zod, Shadcn, SupaBase, TMDB API.
@@ -56,18 +54,19 @@ npm run dev
 A live demo is available [here](https://cinescope-demo.vercel.app). It is set to US (ISO 3166-1) region. It is hosted on Vercel and Supabase.
 
 ## Notes
-- **Not actively developed**
+- **Not actively developed; archived soon**
 -  Featured movie selections might seem odd, as they are regional and include re-releases. 
 - TMDB adult content is disabled everywhere 
 
 ## Future improvements
+- Remove duplicate registration
 - Live TMDB region switching
 - OAuth / OIDC
 - Carousel rendering tweaks
 - Carousel start/stop feature
 - Personal catalog sharing
 
-## Screenshots
+## Screenshots (slightly outdated, conceptually correct)
 ![HOME](/assets/README_hero_home.jpeg)
 ![DISCOVER](/assets/README_discover_form.jpeg)
 ![QUERY](/assets/README_query.jpeg)

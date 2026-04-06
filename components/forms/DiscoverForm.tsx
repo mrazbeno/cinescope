@@ -176,6 +176,7 @@ export default function DiscoverForm() {
   }, []);
 
   return (
+    <div className="w-full max-w-xl p-4">
     <FormProvider {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
@@ -487,5 +488,6 @@ export default function DiscoverForm() {
         </fieldset>
       </form>
     </FormProvider>
+    </div>
   );
 }
