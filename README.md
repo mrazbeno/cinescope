@@ -63,10 +63,10 @@ A live demo is available [here](https://cinescope-nu-six.vercel.app/). It is hos
 - More intuitive forms (tooltips?)
 
 ## Screenshots
-![HOME](/assets/README_hero_home.png)
-![DISCOVER](/assets/README_discover_form.png)
-![QUERY](/assets/README_query.png)
-![DETAIL_TOP](/assets/README_detail_top.png)
-![DETAIL_BOTTOM](/assets/README_detail_bottom.png)
-![CATALOG](/assets/README_personal_catalog.png)
-![EMAIL](/assets/README_email_light.png)
+![HOME](/assets/README_hero_home.jpeg)
+![DISCOVER](/assets/README_discover_form.jpeg)
+![QUERY](/assets/README_query.jpeg)
+![DETAIL_TOP](/assets/README_detail_top.jpeg)
+![DETAIL_BOTTOM](/assets/README_detail_bottom.jpeg)
+![CATALOG](/assets/README_personal_catalog.jpeg)
+![EMAIL](/assets/README_email_light.jpeg)

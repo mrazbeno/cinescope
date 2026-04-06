@@ -27,11 +27,11 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "CineScope - Movie Explorer",
     locale: "en_US",
-    images: ["/public/og-main.jpg"],
+    images: ["/seo/og-main.jpeg"],
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/public/og-main.jpg"],
+    images: ["/seo/og-main.jpeg"],
   },
 }
 
