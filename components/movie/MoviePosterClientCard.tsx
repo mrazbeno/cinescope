@@ -1,10 +1,12 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { Heart, Clock, Pause, Square, Play, Check, Eye } from "lucide-react";
 import { getTMDBImage, type TMDBPosterSize } from "@/lib/tmbd";
 import { WatchStatus } from "@/lib/movieStates";
 import MoviePosterImage from "./MoviePosterImage.client";
+import { useLinkPending } from "@/hooks/useLinkPending";
 
 type Props = {
   id: number;
@@ -79,6 +81,8 @@ export default function MoviePosterClientCard({
   onReadyKey,
   sizes = "(max-width: 768px) 120px, 185px",
 }: Props) {
+  const { isPending, activate } = useLinkPending(href);
+
   const src = posterPath
     ? getTMDBImage(posterPath, posterSize) ?? "https://placehold.co/185x278/png"
     : "https://placehold.co/185x278/png";
@@ -124,9 +128,25 @@ export default function MoviePosterClientCard({
         )}
 
         {href && (
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity bg-black/50 text-white flex flex-col items-center justify-center z-10">
-            <Eye />
-            <span>View details</span>
+          <div
+            className={[
+              "absolute inset-0 text-white flex flex-col items-center justify-center z-10 transition-opacity",
+              isPending
+                ? "opacity-100 bg-black/60"
+                : "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 bg-black/50",
+            ].join(" ")}
+          >
+            {isPending ? (
+              <>
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white mb-2" />
+                <span>Opening details…</span>
+              </>
+            ) : (
+              <>
+                <Eye />
+                <span>View details</span>
+              </>
+            )}
           </div>
         )}
       </div>
@@ -139,6 +159,13 @@ export default function MoviePosterClientCard({
       prefetch={false}
       className="group block"
       aria-label={`View details for ${title ?? `movie ${id}`}`}
+      aria-busy={isPending}
+      onClick={activate}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          activate();
+        }
+      }}
     >
       {content}
     </Link>

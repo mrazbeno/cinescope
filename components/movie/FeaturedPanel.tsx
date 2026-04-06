@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import MovieGrid from "@/components/movie/MovieGrid";
+import MovieGrid from "@/components/movie/MovieGridClient";
 import { getMovies } from "@/lib/utils";
 
 type Props = {
@@ -14,6 +14,8 @@ export const revalidate = 86400;
 
 export default async function FeaturedPanel({ title, url }: Props) {
   const results = await getMovies(url, revalidate);
+
+  console.log("Upcoming movies: ", results)
 
   return (
     <main className="flex flex-col w-full h-full min-h-0 justify-start items-stretch py-3 px-8 gap-3">

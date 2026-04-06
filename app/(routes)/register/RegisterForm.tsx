@@ -42,7 +42,17 @@ const RegisterForm = ({
     setLoading(true);
 
     try {
-      const res = await supabase.auth.signUp({ email, password });
+      const baseURL =
+        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const emailRedirectTo = new URL(`${baseURL}/email-confirmed`).toString();
+
+      const res = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo,
+        },
+      });
 
       if (res.error) {
         setError(res.error.message || "Registration failed");
@@ -60,7 +70,7 @@ const RegisterForm = ({
   return (
     <div className="flex h-full items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-6">
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-row items-end gap-2">
           <h1 className="text-3xl">CineScope</h1> - find your next watch
         </div>
 
@@ -68,6 +78,7 @@ const RegisterForm = ({
           onSubmit={onSubmit}
           className="relative min-w-sm flex w-full max-w-sm flex-col items-center gap-y-4 rounded-md border-none px-6 py-8"
           aria-busy={loading}
+          noValidate={false}
         >
           <fieldset
             disabled={loading}
@@ -75,34 +86,61 @@ const RegisterForm = ({
           >
             {heading && <h1 className="text-xl font-semibold">{heading}</h1>}
 
-            <Input
-              type="email"
-              placeholder="Email"
-              className="text-sm"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
 
-            <Input
-              type="password"
-              placeholder="Password"
-              className="text-sm"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="w-full space-y-2">
+              <label htmlFor="email" className="block text-sm font-medium">
+                Email
+              </label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                required
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
-            <Input
-              type="password"
-              placeholder="Confirm Password"
-              className="text-sm"
-              required
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-            />
+            <div className="w-full space-y-2">
+              <label htmlFor="password" className="block text-sm font-medium">
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                required
+                autoComplete="new-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
 
-            {error && <div className="w-full text-sm text-destructive">{error}</div>}
+            <div className="w-full space-y-2">
+              <label htmlFor="confirm" className="block text-sm font-medium">
+                Confirm password
+              </label>
+              <Input
+                id="confirm"
+                type="password"
+                placeholder="Re-enter your password"
+                required
+                autoComplete="new-password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+              />
+            </div>
+
+            {error && (
+              <div
+                id="register-form-error"
+                className="w-full text-sm text-destructive"
+                role="alert"
+              >
+                {error}
+              </div>
+            )}
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating..." : buttonText}

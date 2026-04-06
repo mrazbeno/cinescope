@@ -54,74 +54,86 @@ export function ComboboxField({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem className="flex flex-col grow w-full">
-          <FormLabel>{label}</FormLabel>
+      render={({ field }) => {
+        const selectedLabel = field.value
+          ? options.find((opt) => opt.value === field.value)?.label
+          : null;
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  disabled={disabled}
-                  className={cn(
-                    "justify-between",
-                    !field.value && "text-muted-foreground"
-                  )}
-                >
-                  {field.value
-                    ? options.find((opt) => opt.value === field.value)?.label
-                    : placeholder}
-                  <ChevronsUpDown className="opacity-50" />
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
+        return (
+          <FormItem className="flex w-full min-w-0 flex-col">
+            <FormLabel>{label}</FormLabel>
 
-            <PopoverContent className="w-[200px] p-0">
-              <Command>
-                <CommandInput
-                  placeholder="Search..."
-                  className="h-9"
-                  disabled={disabled}
-                />
+            <Popover>
+              <PopoverTrigger asChild>
+                <FormControl>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    disabled={disabled}
+                    className={cn(
+                      "flex w-full min-w-0 items-center justify-between overflow-hidden",
+                      !field.value && "text-muted-foreground"
+                    )}
+                  >
+                    <span
+                      className="block min-w-0 flex-1 truncate text-left"
+                      title={selectedLabel ?? placeholder}
+                    >
+                      {selectedLabel ?? placeholder}
+                    </span>
 
-                <CommandList>
-                  <CommandEmpty>No results found.</CommandEmpty>
-                  <CommandGroup>
-                    {options.map((opt) => (
-                      <CommandItem
-                        key={opt.value}
-                        value={opt.label}
-                        disabled={disabled}
-                        onSelect={() => {
-                          if (disabled) return;
-                          setValue(name, opt.value, {
-                            shouldDirty: true,
-                            shouldTouch: true,
-                            shouldValidate: true,
-                          });
-                        }}
-                      >
-                        {opt.label}
-                        <Check
-                          className={cn(
-                            "ml-auto",
-                            opt.value === field.value ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+                    <ChevronsUpDown className="ml-2 shrink-0 opacity-50" />
+                  </Button>
+                </FormControl>
+              </PopoverTrigger>
 
-          {description && <FormDescription>{description}</FormDescription>}
-          <FormMessage />
-        </FormItem>
-      )}
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                <Command>
+                  <CommandInput
+                    placeholder="Search..."
+                    className="h-9"
+                    disabled={disabled}
+                  />
+
+                  <CommandList>
+                    <CommandEmpty>No results found.</CommandEmpty>
+                    <CommandGroup>
+                      {options.map((opt) => (
+                        <CommandItem
+                          key={opt.value}
+                          value={opt.label}
+                          disabled={disabled}
+                          onSelect={() => {
+                            if (disabled) return;
+                            setValue(name, opt.value, {
+                              shouldDirty: true,
+                              shouldTouch: true,
+                              shouldValidate: true,
+                            });
+                          }}
+                        >
+                          <span className="min-w-0 truncate">{opt.label}</span>
+                          <Check
+                            className={cn(
+                              "ml-auto shrink-0",
+                              opt.value === field.value
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+
+            {description && <FormDescription>{description}</FormDescription>}
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 }

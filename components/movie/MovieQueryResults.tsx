@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Paginator from "@/components/pagination/Paginator";
-import MovieGrid from "@/components/movie/MovieGrid";
+import MovieGrid from "@/components/movie/MovieGridClient";
 import { TMDBListResponse } from "@/lib/TMDBTypes";
 
 export const revalidate = 300;

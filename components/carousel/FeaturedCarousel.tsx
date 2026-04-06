@@ -16,6 +16,8 @@ type FeaturedCarouselProps = {
 
 async function FeaturedCarouselContent(props: FeaturedCarouselProps) {
   const movies = await getMovies(props.url, revalidate)
+  console.log("MOVIES:", props.labelText,  movies);
+  
   return (
     <FeaturedCarouselClient
       isDirForward={props.isDirForward}

@@ -3,7 +3,9 @@
 import * as React from "react"
 import Autoplay from "embla-carousel-auto-scroll"
 import {
-  Carousel, CarouselContent, CarouselItem,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
 } from "@/components/ui/carousel"
 import { TMDBMovieSummary } from "@/lib/TMDBTypes"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -19,14 +21,26 @@ type FeaturedCarouselClientProps = {
 }
 
 export function FeaturedCarouselClient(props: FeaturedCarouselClientProps) {
-
   const autoplay = React.useMemo(
-  () => Autoplay({ speed: 1, startDelay: 0, stopOnInteraction: true, direction: props.isDirForward ? "forward" : "backward" }),
-  [props.isDirForward]
-)
+    () =>
+      Autoplay({
+        speed: 1,
+        startDelay: 0,
+        stopOnInteraction: true,
+        direction: props.isDirForward ? "forward" : "backward",
+      }),
+    [props.isDirForward]
+  )
 
-const plugins = React.useMemo(() => [autoplay], [autoplay]);
+  const plugins = React.useMemo(() => [autoplay], [autoplay])
 
+  const stopAutoplay = React.useCallback(() => {
+    autoplay.stop()
+  }, [autoplay])
+
+  const resumeAutoplay = React.useCallback(() => {
+    autoplay.play(1000)
+  }, [autoplay])
 
   return (
     <div className="h-full relative flex select-none">
@@ -35,8 +49,14 @@ const plugins = React.useMemo(() => [autoplay], [autoplay]);
         orientation="vertical"
         plugins={plugins}
         className="relative h-full *:h-full"
-        onMouseEnter={autoplay.stop}
-        onMouseLeave={() => {autoplay.play(1000) }}
+        onMouseEnter={stopAutoplay}
+        onMouseLeave={resumeAutoplay}
+        onTouchStart={stopAutoplay}
+        onTouchEnd={resumeAutoplay}
+        onTouchCancel={resumeAutoplay}
+        onPointerDown={stopAutoplay}
+        onPointerUp={resumeAutoplay}
+        onPointerCancel={resumeAutoplay}
       >
         <CarouselContent className="-mt-1 h-full">
           {Array.from({ length: props.posterCount }).map((_, idx) => (
@@ -55,13 +75,15 @@ const plugins = React.useMemo(() => [autoplay], [autoplay]);
             </CarouselItem>
           ))}
         </CarouselContent>
-        
-        <div className={clsx(
-          "absolute h-min! flex items-center justify-between w-full p-3 bg-[var(--color-background)] text-[var(--color-foreground)]",
-          { "bottom-0": props.isDirForward, "top-0": !props.isDirForward }
-        )}>
+
+        <div
+          className={clsx(
+            "absolute h-min! flex items-center justify-between w-full p-3 bg-[var(--color-background)] text-[var(--color-foreground)]",
+            { "bottom-0": props.isDirForward, "top-0": !props.isDirForward }
+          )}
+        >
           {props.labelText}
-          {props.isDirForward ? (<ArrowUp />) : (<ArrowDown />)}
+          {props.isDirForward ? <ArrowUp /> : <ArrowDown />}
         </div>
       </Carousel>
     </div>

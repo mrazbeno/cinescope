@@ -1,18 +1,25 @@
 
 # CineScope
 
-**A personal project.**
+A movie discovery and search app powered by the TMDB API.  
 
-A frontend for discovering and searching for movies using the TMDB API. Offers accounts, served by SupaBase, for managing a personal collection of them. Also includes featured movie lists, rich details and poster first record representation. 
+Users can create accounts (via Supabase) to manage a personal movie collection, explore regional featured lists, and view rich movie details.
 
-Built with Next.js, Tailwind, React, zod, Shadcn, SupaBase, TMDB API.
+## Tech Stack
+- Next.js (App Router)
+- React
+- Tailwind CSS + shadcn/ui
+- Supabase (Auth + Database)
+- Zod (validation)
+- TMDB API
 
 ## Features
-- Separate search and discover functionalities
-- Personal movie list, belonging to accounts
-- Featured carousel and movie grid
-- Results pagination
-- Rich movie details
+- Movie search with debounced queries
+- Advanced discover filters (region, sorting, etc.)
+- Personal movie collection (authenticated users)
+- Regional featured movies carousel
+- Paginated results
+- Detailed movie pages with rich metadata
 
 ## Quick Start
 
@@ -53,14 +60,15 @@ npm run dev
 2. Open `http://localhost:3000`.
 
 ## Demo
-A live demo is available [here](https://cinescope-nu-six.vercel.app/). It is hosted on Vercel and Supabase.
+A live demo is available [here](https://cinescope-demo.vercel.app). It is hosted on Vercel and Supabase.
 
-## Notes & Future improvements
-- **Not actively developed**
-- Carousel rendering tweaks
-- Carousel start/stop feature
-- Personal catalog sharing
-- More intuitive forms (tooltips?)
+The demo is set to the US region (ISO 3166-1) for regional movie sets.
+
+## About
+This project was built to explore full-stack development with authentication, external APIs, and modern React patterns using Next.js.
+
+## Status
+This project is feature-complete and no longer actively developed.
 
 ## Screenshots
 ![HOME](/assets/README_hero_home.jpeg)

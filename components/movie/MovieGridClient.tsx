@@ -3,7 +3,7 @@
 import * as React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import MoviePoster from "@/components/movie/MoviePoster";
+import MoviePoster from "@/components/movie/MoviePosterClientCard";
 import { WatchStatus } from "@/lib/movieStates";
 
 type MovieGridMovie = {

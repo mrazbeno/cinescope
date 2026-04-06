@@ -53,7 +53,7 @@ const LoginForm = ({
   return (
     <div className="flex h-full items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-6">
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-row items-end gap-2">
           <h1 className="text-3xl">CineScope</h1> - Find your next watch
         </div>
 
@@ -68,25 +68,49 @@ const LoginForm = ({
           >
             {heading && <h1 className="text-xl font-semibold">{heading}</h1>}
 
-            <Input
-              type="email"
-              placeholder="Email"
-              className="text-sm"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <div className="w-full space-y-2">
+              <label htmlFor="email" className="block text-sm font-medium">
+                Email
+              </label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                className="text-sm"
+                required
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                aria-describedby={error ? "login-form-error" : undefined}
+              />
+            </div>
 
-            <Input
-              type="password"
-              placeholder="Password"
-              className="text-sm"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="w-full space-y-2">
+              <label htmlFor="password" className="block text-sm font-medium">
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                className="text-sm"
+                required
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                aria-describedby={error ? "login-form-error" : undefined}
+              />
+            </div>
 
-            {error && <div className="w-full text-sm text-destructive">{error}</div>}
+            {error && (
+              <div
+                id="login-form-error"
+                className="w-full text-sm text-destructive"
+                role="alert"
+              >
+                {error}
+              </div>
+            )}
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Signing in..." : buttonText}
