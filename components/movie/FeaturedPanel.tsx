@@ -15,6 +15,8 @@ export const revalidate = 86400;
 export default async function FeaturedPanel({ title, url }: Props) {
   const results = await getMovies(url, revalidate);
 
+  console.log("Upcoming movies: ", results)
+
   return (
     <main className="flex flex-col w-full h-full min-h-0 justify-start items-stretch py-3 px-8 gap-3">
       <section className="relative flex flex-col w-full items-center justify-center shrink-0 gap-2">

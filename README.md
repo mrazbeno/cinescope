@@ -3,14 +3,14 @@
 
 **A personal project.**
 
-A frontend for discovering and searching for movies using the TMDB API. Offers accounts, served by SupaBase, for managing a personal collection of them. Also includes featured movie lists, rich details and poster first record representation. 
+A frontend for discovering and searching for movies using the TMDB API. Offers accounts, served by SupaBase, for managing a personal collection of them. Also includes regional featured movie lists, rich details and poster first record representation. 
 
 Built with Next.js, Tailwind, React, zod, Shadcn, SupaBase, TMDB API.
 
 ## Features
 - Separate search and discover functionalities
 - Personal movie list, belonging to accounts
-- Featured carousel and movie grid
+- Regional featured carousel and movie grid
 - Results pagination
 - Rich movie details
 
@@ -53,12 +53,14 @@ npm run dev
 2. Open `http://localhost:3000`.
 
 ## Demo
-A live demo is available [here](https://cinescope-demo.vercel.app). It is hosted on Vercel and Supabase.
+A live demo is available [here](https://cinescope-demo.vercel.app). It is set to US (ISO 3166-1) region. It is hosted on Vercel and Supabase.
 
 ## Notes
 - **Not actively developed**
+-  Featured movie selections might seem odd, as they are regional and include re-releases. 
 
 ## Future improvements
+- Live TMDB region switching
 - OAuth / OIDC
 - Carousel rendering tweaks
 - Carousel start/stop feature

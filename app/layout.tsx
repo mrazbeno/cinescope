@@ -6,6 +6,7 @@ import type { Metadata } from "next"
 import HeaderBar from "@/components/common/HeaderBar"
 import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils";
+import { getNowPlayingMoviesUrl, getPopularMoviesUrl, getTopRatedMoviesUrl, getUpcomingMoviesUrl } from "@/lib/tmdbApi"
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -40,6 +41,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+
+
+  
+
   return (
     <html lang="en-US" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body
@@ -49,13 +54,13 @@ export default function RootLayout({
           <aside className="relative hidden lg:flex h-full pl-3 gap-3">
             <FeaturedCarousel
               labelText="Most popular"
-              url="https://api.themoviedb.org/3/movie/popular?language=en-US&page=1"
+              url={getPopularMoviesUrl(1)}
               posterCount={20}
               isDirForward
             />
             <FeaturedCarousel
               labelText="Top rated"
-              url="https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1"
+              url={getTopRatedMoviesUrl(1)}
               posterCount={20}
               isDirForward={false} />
 
@@ -69,13 +74,13 @@ export default function RootLayout({
           <aside className="relative hidden lg:flex h-full pr-3 gap-3">
             <FeaturedCarousel
               labelText="Upcoming"
-              url="https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1"
+              url={getUpcomingMoviesUrl(1)}
               posterCount={20}
               isDirForward={false}
             />
             <FeaturedCarousel
               labelText="Now playing"
-              url="https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1"
+              url={getNowPlayingMoviesUrl(1)}
               posterCount={20}
               isDirForward
             />
