@@ -43,54 +43,60 @@ export default function RootLayout({
 }>) {
 
 
-  
+
 
   return (
     <html lang="en-US" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body
         className={`${geist.variable} ${fontMono.variable} font-sans antialiased`}
       >
-        <div className="relative flex items-center flex-col md:flex-row justify-center h-svh w-svw">
-          <aside className="relative hidden lg:flex h-full pl-3 gap-3">
-            <FeaturedCarousel
-              labelText="Most popular"
-              url={getPopularMoviesUrl(1)}
-              posterCount={20}
-              isDirForward
-            />
-            <FeaturedCarousel
-              labelText="Top rated"
-              url={getTopRatedMoviesUrl(1)}
-              posterCount={20}
-              isDirForward={false} />
+        <Providers>
+          <div className="relative flex items-center flex-col md:flex-row justify-center h-svh w-svw">
+            <aside className="relative hidden lg:flex h-full pl-3 gap-3">
+              <FeaturedCarousel
+                labelText="Most popular"
+                url={getPopularMoviesUrl(1)}
+                posterCount={20}
+                isDirForward
+              />
+              <FeaturedCarousel
+                labelText="Top rated"
+                url={getTopRatedMoviesUrl(1)}
+                posterCount={20}
+                isDirForward={false} />
 
-          </aside>
-          <div className="relative grow h-full min-h-0 overflow-y-auto flex flex-col items-center justify-center w-full">
-            <Providers>
+            </aside>
+            <div className="relative grow h-full min-h-0 overflow-y-auto flex flex-col items-center justify-center w-full">
+
               <HeaderBar />
-              {children}
-            </Providers>
+              <div className="relative w-full grow">
+                <div className="absolute h-full w-full flex flex-col overflow-auto">
+                  {children}
+                </div>
+              </div>
+              {/* </Providers> */}
+            </div>
+            <aside className="relative hidden lg:flex h-full pr-3 gap-3">
+              <FeaturedCarousel
+                labelText="Upcoming"
+                url={getUpcomingMoviesUrl(1)}
+                posterCount={20}
+                isDirForward={false}
+              />
+              <FeaturedCarousel
+                labelText="Now playing"
+                url={getNowPlayingMoviesUrl(1)}
+                posterCount={20}
+                isDirForward
+              />
+            </aside>
           </div>
-          <aside className="relative hidden lg:flex h-full pr-3 gap-3">
-            <FeaturedCarousel
-              labelText="Upcoming"
-              url={getUpcomingMoviesUrl(1)}
-              posterCount={20}
-              isDirForward={false}
-            />
-            <FeaturedCarousel
-              labelText="Now playing"
-              url={getNowPlayingMoviesUrl(1)}
-              posterCount={20}
-              isDirForward
-            />
-          </aside>
-        </div>
 
-        <div className="fixed -z-10 h-full w-full top-0 left-0 bg-[#0f172a] hidden dark:block">
-          <div className="absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_10%,rgba(255,255,255,0)_40%,rgba(42,22,97,1)_100%)]"></div>
-        </div>
-        <Toaster />
+          <div className="fixed -z-10 h-full w-full top-0 left-0 bg-[#0f172a] hidden dark:block">
+            <div className="absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_10%,rgba(255,255,255,0)_40%,rgba(42,22,97,1)_100%)]"></div>
+          </div>
+          <Toaster />
+        </Providers>
       </body>
     </html>
   )

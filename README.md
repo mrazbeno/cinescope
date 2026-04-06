@@ -58,6 +58,7 @@ A live demo is available [here](https://cinescope-demo.vercel.app). It is set to
 ## Notes
 - **Not actively developed**
 -  Featured movie selections might seem odd, as they are regional and include re-releases. 
+- TMDB adult content is disabled everywhere 
 
 ## Future improvements
 - Live TMDB region switching

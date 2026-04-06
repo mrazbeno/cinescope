@@ -71,21 +71,23 @@ export function ComboboxField({
                     role="combobox"
                     disabled={disabled}
                     className={cn(
-                      "w-full min-w-0 justify-between",
+                      "flex w-full min-w-0 items-center justify-between overflow-hidden",
                       !field.value && "text-muted-foreground"
                     )}
                   >
-                    <div className="flex w-full min-w-0 items-center">
-                      <span className="min-w-0 flex-1 truncate text-left" title={selectedLabel ?? placeholder}>
-                        {selectedLabel ?? placeholder}
-                      </span>
-                      <ChevronsUpDown className="ml-2 shrink-0 opacity-50" />
-                    </div>
+                    <span
+                      className="block min-w-0 flex-1 truncate text-left"
+                      title={selectedLabel ?? placeholder}
+                    >
+                      {selectedLabel ?? placeholder}
+                    </span>
+
+                    <ChevronsUpDown className="ml-2 shrink-0 opacity-50" />
                   </Button>
                 </FormControl>
               </PopoverTrigger>
 
-              <PopoverContent className="w-[200px] p-0">
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                 <Command>
                   <CommandInput
                     placeholder="Search..."
@@ -110,7 +112,7 @@ export function ComboboxField({
                             });
                           }}
                         >
-                          <span className="">{opt.label}</span>
+                          <span className="min-w-0 truncate">{opt.label}</span>
                           <Check
                             className={cn(
                               "ml-auto shrink-0",

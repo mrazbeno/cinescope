@@ -10,7 +10,7 @@ export default function ToggleInterface() {
   const [isDiscovering, setIsDiscovering] = React.useState(false);
 
   return (
-    <div className="w-[90%] max-w-3xl flex justify-center items-center flex-col gap-6">
+    <div className="w-[90%] max-w-md flex justify-center items-center flex-col gap-6 overflow-hidden">
       <div className="flex grow gap-2">
         <Label htmlFor="search_active">Search</Label>
         <Switch onCheckedChange={setIsDiscovering} checked={isDiscovering} id="search_active" />

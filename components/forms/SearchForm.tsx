@@ -52,7 +52,7 @@ export default function SearchForm() {
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-6">
       <FormProvider {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -101,8 +101,8 @@ export default function SearchForm() {
         </form>
       </FormProvider>
 
-      <article className="flex flex-col gap-2 mt-4 lg:hidden" aria-busy={isPending}>
-        <div className="flex gap-2">
+      {/* <article className="flex flex-col justify-center gap-2 lg:hidden " aria-busy={isPending}>
+        <div className="flex gap-2 w-">
           <Button
             type="button"
             onClick={() => goToFeatured("/featured/popular")}
@@ -139,7 +139,48 @@ export default function SearchForm() {
             {isPending ? "Loading..." : "Now playing"}
           </Button>
         </div>
+      </article> */}
+
+
+      <article className="flex flex-row justify-center gap-2 lg:hidden flex-wrap" aria-busy={isPending}>
+        
+          <Button
+            type="button"
+            onClick={() => goToFeatured("/featured/popular")}
+            variant="outline"
+            disabled={isPending}
+          >
+            {isPending ? "Loading..." : "Most popular"}
+          </Button>
+          <Button
+            type="button"
+            onClick={() => goToFeatured("/featured/top-rated")}
+            variant="outline"
+            disabled={isPending}
+          >
+            {isPending ? "Loading..." : "Top rated"}
+          </Button>
+        
+
+       
+          <Button
+            type="button"
+            onClick={() => goToFeatured("/featured/upcoming")}
+            variant="outline"
+            disabled={isPending}
+          >
+            {isPending ? "Loading..." : "Upcoming"}
+          </Button>
+          <Button
+            type="button"
+            onClick={() => goToFeatured("/featured/now-playing")}
+            variant="outline"
+            disabled={isPending}
+          >
+            {isPending ? "Loading..." : "Now playing"}
+          </Button>
+        
       </article>
-    </>
+    </div>
   );
 }

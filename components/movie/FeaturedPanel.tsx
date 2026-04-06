@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import MovieGrid from "@/components/movie/MovieGrid";
+import MovieGrid from "@/components/movie/MovieGridClient";
 import { getMovies } from "@/lib/utils";
 
 type Props = {

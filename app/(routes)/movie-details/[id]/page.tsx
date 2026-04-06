@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import MoviePoster from "@/components/movie/MoviePoster";
+import MoviePoster from "@/components/movie/MoviePosterClientCard";
 import { TMDBMovieDetail, TMDBMovieCreditsResponse } from "@/lib/TMDBTypes";
 import { Badge } from "@/components/ui/badge";
 import { getTMDBImage } from "@/lib/tmbd";

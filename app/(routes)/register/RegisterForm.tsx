@@ -70,7 +70,7 @@ const RegisterForm = ({
   return (
     <div className="flex h-full items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-6">
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-row items-end gap-2">
           <h1 className="text-3xl">CineScope</h1> - find your next watch
         </div>
 
