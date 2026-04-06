@@ -4,6 +4,8 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { CircleQuestionMark } from "lucide-react";
 
 function GenreSelector({
   availableGenres,
@@ -44,7 +46,18 @@ function GenreSelector({
       aria-disabled={disabled}
     >
       <div className="font-normal whitespace-nowrap mb-2">
-        Movie genres
+        <div className="flex flex-row justify-between">
+          Movie genres
+          <Tooltip>
+            <TooltipTrigger asChild className="cursor-help">
+              <CircleQuestionMark className="p-1 shrink-0" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Select one or more movie genres, and decide if results should satisfy having all (AND) or any (OR) of them.</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+
         <div className="flex gap-2 flex-row items-center text-sm text-muted-foreground">
           AND
           <Switch

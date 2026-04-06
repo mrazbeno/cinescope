@@ -19,6 +19,10 @@ export const metadata: Metadata = {
   title: { default: "CineScope - Movie Explorer", template: "%s | CineScope" },
   description: "Discover details, casts and ratings for your favourite movies.",
 
+  icons: {
+    icon: "/favicon.ico",
+  },
+
   openGraph: {
     type: "website",
     siteName: "CineScope - Movie Explorer",

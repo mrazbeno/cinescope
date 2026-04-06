@@ -3,8 +3,8 @@ import { Label } from "@/components/ui/label"
 
 export default function Loading() {
   return (
-     <main className="flex flex-col w-full p-4 overflow-auto">
-            <article className="w-full max-w-screen-lg mx-auto">
+     <main className="flex flex-col w-full grow relative p-0 overflow-auto">
+            <article className="w-full absolute top-0 p-4">
                 {/* Header */}
                 <header className="flex items-start justify-between gap-4 mb-6">
                     <div>

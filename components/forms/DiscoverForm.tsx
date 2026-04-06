@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, Ellipsis } from "lucide-react";
+import { CalendarIcon, Ellipsis, Info, CircleQuestionMark } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,7 @@ import { sortByOptions } from "@/lib/TMDBTypes";
 import { ComboboxField } from "../util/ComboBoxField";
 import { Option } from "../util/ComboBoxField";
 import GenreSelector from "./GenreSelector";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 const sortByEnum = z.enum(
   sortByOptions.map((opt) => opt.value) as [string, ...string[]]
@@ -220,8 +221,20 @@ export default function DiscoverForm() {
                     name="vote_average.lte"
                     render={({ field }) => (
                       <FormItem className="flex flex-col grow">
-                        <FormLabel htmlFor="vote_avg_lte" className="font-normal">
+                        <FormLabel htmlFor="vote_avg_lte" className="font-normal flex flex-row justify-between">
                           Vote average maximum
+
+                          <Tooltip>
+                          <TooltipTrigger asChild className="cursor-help">
+                            <CircleQuestionMark className="p-1 shrink-0" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>
+                              Vote average range is 0-10.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+
                         </FormLabel>
                         <FormControl>
                           <Input
