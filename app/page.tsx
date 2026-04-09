@@ -30,7 +30,7 @@ export default function Page() {
 export async function generateMetadata() {
   const title = "CineScope — Discover movies";
   const description = "Search and discover movies with filters, ratings, and details powered by TMDB.";
-  const url = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const url = process.env.NEXT_PUBLIC_APP_URL ?? "";
 
   return {
     title,
@@ -52,7 +52,7 @@ export async function generateMetadata() {
 }
 
 function WebSiteJsonLd() {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
   const json = {
     "@context": "https://schema.org",
     "@type": "WebSite",

@@ -6,10 +6,9 @@ import { Toggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Label } from "@/components/ui/label";
 import { Heart } from "lucide-react";
-
-import { WatchStatusOptions } from "@/lib/movieStates";
-import { defaultMovieStatesFilter, SortingValue, type MovieStatesFilter, SortingValueOptions } from "@/app/(routes)/my-filter/filters";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem } from "@/components/ui/select";
+import { WatchStatusOptions } from "@/lib/movieStateTypes";
+import { MovieStatesFilter, defaultMovieStatesFilter, SortingValueOptions } from "@/lib/movieStateFilters";
 
 type Props = {
     value: MovieStatesFilter;

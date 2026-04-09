@@ -1,4 +1,11 @@
-import { type Option } from "../components/util/ComboBoxField";
+
+
+export type Option = {
+  label: string;
+  value: string;
+};
+
+export type TMDBPosterSize = 'w92' | 'w154' | 'w185' | 'w342' | 'w500' | 'w780' | 'original'
 
 export const sortByOptions: Option[] = [
     { value: "popularity.asc", label: "Popularity (Lowest → Highest)" },

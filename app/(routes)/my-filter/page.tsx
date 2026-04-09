@@ -15,18 +15,13 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { MovieStatesFilters } from './MovieStatesFilters';
-import {
-  defaultMovieStatesFilter,
-  DecodeFilterFromURL,
-  EncodeFilterForURL,
-  fetchMyListPage,
-  MyListFetchResult,
-} from './filters';
 import { useAuth } from '@/components/auth/authProvider';
 import PaginatorClient from '@/components/pagination/PaginatorClient';
 import MovieGridClient, {
   MovieGridClientSkeleton,
 } from '@/components/movie/MovieGridClient';
+import { PaginatedResult, MyMovieListItem, fetchMyListPage } from '@/lib/movieStateApi';
+import { decodeFilterFromURL, defaultMovieStatesFilter, encodeFilterForURL } from '@/lib/movieStateFilters';
 
 function parsePage(search: string): number {
   const p = new URLSearchParams(search).get('page');
@@ -40,54 +35,69 @@ export default function MyPage() {
   const auth = useAuth();
 
   const search = searchParams.toString();
-  const appliedFilter = React.useMemo(() => DecodeFilterFromURL(search), [search]);
+  const appliedFilter = React.useMemo(() => decodeFilterFromURL(search), [search]);
   const currentPage = React.useMemo(() => parsePage(search), [search]);
 
   const [draftFilter, setDraftFilter] = React.useState(defaultMovieStatesFilter);
   const [sheetOpen, setSheetOpen] = React.useState(false);
 
+  const [myListResp, setResp] = React.useState<PaginatedResult<MyMovieListItem> | null>(null);
+  const [loading, setLoading] = React.useState(false);
+  const [errorFetching, setErrorFetching] = React.useState(false);
+  const [reloadKey, setReloadKey] = React.useState(0);
+
   React.useEffect(() => {
     setDraftFilter(appliedFilter);
   }, [appliedFilter]);
-
-  const [resp, setResp] = React.useState<MyListFetchResult | null>(null);
-  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
     if (!auth.loading && !auth.user) router.replace('/login');
   }, [auth.loading, auth.user, router]);
 
   React.useEffect(() => {
-    if (auth.loading || !auth.user) return;
+    if (auth.loading || auth.user == null) return;
 
     let cancelled = false;
 
     (async () => {
       try {
         setLoading(true);
+        setErrorFetching(false);
         setResp(null);
 
-        if (auth.user == null) return;
+        if (auth.loading || auth.user == null) return;
 
-        const listResp = await fetchMyListPage(auth.user.id, appliedFilter, currentPage);
+        const listResp = await fetchMyListPage(
+          auth.user.id,
+          appliedFilter,
+          currentPage
+        );
 
-        if (!cancelled) setResp(listResp);
+        if (!cancelled) {
+          setResp(listResp);
+        }
       } catch (e: any) {
         const msg = e?.message ?? 'Failed to load list';
         toast.error(msg);
-        if (!cancelled) setResp(null);
+
+        if (!cancelled) {
+          setResp(null);
+          setErrorFetching(true);
+        }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [auth.loading, auth.user, appliedFilter, currentPage]);
+  }, [auth.loading, auth.user, appliedFilter, currentPage, reloadKey]);
 
   const onSubmit = () => {
-    const params = new URLSearchParams(EncodeFilterForURL(draftFilter));
+    const params = new URLSearchParams(encodeFilterForURL(draftFilter));
     params.set('page', '1');
     setSheetOpen(false);
     router.push(`/my-filter?${params.toString()}`);
@@ -97,6 +107,10 @@ export default function MyPage() {
     setDraftFilter(defaultMovieStatesFilter);
     setSheetOpen(false);
     router.push('/my-filter?page=1');
+  };
+
+  const onRetry = () => {
+    setReloadKey((k) => k + 1);
   };
 
   const filtersBlock = (
@@ -123,12 +137,13 @@ export default function MyPage() {
     <main className="flex flex-col w-full h-full min-h-0 justify-start items-stretch p-4 gap-3">
       <section className="flex flex-col gap-3 w-full">
         <div className="md:hidden">
-          <div className='sm:hidden text-sm mb-2 flex flex-row gap-2'>
-            Logged in as: 
-            <span className=' font-bold'>
-{auth.user?.email?.split("@")[0]}
+          <div className="sm:hidden text-sm mb-2 flex flex-row gap-2">
+            Logged in as:
+            <span className="font-bold">
+              {auth.user?.email?.split("@")[0]}
             </span>
-            </div>
+          </div>
+
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" className="w-full">
@@ -159,37 +174,42 @@ export default function MyPage() {
 
       <section className="flex flex-col w-full h-full min-h-0 justify-start items-stretch gap-3">
         <section className="relative flex flex-col w-full items-center justify-center shrink-0 gap-2">
-          {!resp ? (
+          {loading ? (
             <div className="text-sm text-muted-foreground">
               Found <Skeleton className="inline-block align-middle h-4 w-16" /> results...
             </div>
+          ) : errorFetching ? (
+            <div className="text-sm text-muted-foreground">
+              Could not load results.
+            </div>
           ) : (
             <div>
-              Found <b>{resp.tmbdListResponse.total_results}</b> results...
+              Found <b>{myListResp?.total_results ?? 0}</b> results...
             </div>
           )}
         </section>
 
         <section className="flex flex-col flex-1 min-h-0 w-full">
-          {!resp ? (
+          {loading ? (
             <MovieGridClientSkeleton />
           ) : (
             <MovieGridClient
-              results={resp.tmbdListResponse.results}
-              myListDetails={resp.myListDetails}
+              gridItems={myListResp?.items ?? []}
+              errorFetching={errorFetching}
+              onRetry={onRetry}
             />
           )}
         </section>
 
         <section className="flex w-full justify-center shrink-0">
-          {!resp ? (
+          {loading ? (
             <Skeleton className="w-1/2 h-8" />
-          ) : (
+          ) : !errorFetching && myListResp ? (
             <PaginatorClient
-              currentPage={resp.tmbdListResponse.page}
-              totalPages={resp.tmbdListResponse.total_pages}
+              currentPage={myListResp.page}
+              totalPages={myListResp.total_pages}
             />
-          )}
+          ) : null}
         </section>
       </section>
     </main>

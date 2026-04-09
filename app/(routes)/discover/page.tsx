@@ -24,7 +24,7 @@ export async function generateMetadata({ searchParams }: any): Promise<Metadata>
     const sort = params.get("sort_by") ?? "popularity.desc";
     const title = `Discover movies — ${sort} — Page ${page}`;
     const description = "Browse and filter movies by ratings, dates, genres, languages, and sort order.";
-    const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+    const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
     const canonical = base ? `${base}/discover?${params.toString()}` : undefined;
 
     return {

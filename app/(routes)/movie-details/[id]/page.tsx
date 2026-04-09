@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import MoviePoster from "@/components/movie/MoviePosterClientCard";
-import { TMDBMovieDetail, TMDBMovieCreditsResponse } from "@/lib/TMDBTypes";
+import { TMDBMovieDetail, TMDBMovieCreditsResponse } from "@/lib/tmdbTypes";
 import { Badge } from "@/components/ui/badge";
-import { getTMDBImage } from "@/lib/tmbd";
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next"
 import MyListActions from "./MyListActions";
+import { getTMDBImage } from "@/lib/tmdbApi";
 
 // Utility: get unique names
 function uniqueNames(list: { name: string }[]): string[] {
@@ -75,7 +75,7 @@ export async function generateMetadata(
     const description = movie.overview
     const poster = getTMDBImage(movie.poster_path, "w780")
 
-    const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+    const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
     const canonical = base ? `${base}/movie-details/${movieId}` : undefined;
 
     return {
@@ -387,7 +387,7 @@ export default async function Page({ params }: any) {
                                     )}
 
                                     {detail?.imdb_id && (
-                                        <ButtonLink href={`https://www.imdb.com/title/${detail.imdb_id}`} variant="outline" size="sm">
+                                        <ButtonLink target="_blank" href={`https://www.imdb.com/title/${detail.imdb_id}`} variant="outline" size="sm">
                                             IMDb
                                         </ButtonLink>
                                     )}

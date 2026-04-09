@@ -2,14 +2,31 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem } from '@/components/ui/select';
 import { Heart } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectItem,
+} from '@/components/ui/select';
 import { useAuth } from '@/components/auth/authProvider';
-import { supabase } from '@/lib/supabaseBrowser';
-import { intitialMovieStateRow, MovieStateRow, WatchStatus, WatchStatusOptions } from '@/lib/movieStates';
+import {
+  MovieStateRow,
+  intitialMovieStateRow,
+  WatchStatus,
+  WatchStatusOptions,
+} from '@/lib/movieStateTypes';
+import {
+  fetchMovieState,
+  upsertMovieState,
+  type MovieStatePatch,
+} from '@/lib/movieStateApi';
 
 interface MyListActionsProps {
   movieId: string;
@@ -20,23 +37,21 @@ interface MyListActionsProps {
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 
-async function upsertMovieState(userId: string, tmdbMovieId: string, patch: Partial<MovieStateRow>) {
-  const { error } = await supabase
-    .from('movie_statuses')
-    .upsert({ user_id: userId, tmdb_movie_id: tmdbMovieId, ...patch }, { onConflict: 'user_id,tmdb_movie_id' });
-
-  if (error) throw new Error(error.message);
-}
-
-async function fetchMovieState(tmdbId: string): Promise<MovieStateRow> {
-  const { data, error } = await supabase
-    .from('movie_statuses')
-    .select('tmdb_movie_id,is_favorite,watch_status,title,poster_path,release_date')
-    .eq('tmdb_movie_id', tmdbId)
-    .limit(1);
-
-  if (error) throw new Error(error.message);
-  return (data?.[0] as MovieStateRow) ?? intitialMovieStateRow;
+function DisabledOverlay({
+  children,
+  overlay,
+}: {
+  children: React.ReactNode;
+  overlay: React.ReactNode;
+}) {
+  return (
+    <div className="relative w-min rounded-md">
+      {children}
+      <div className="absolute inset-0 flex items-center justify-center rounded-md bg-muted/50 px-3 text-sm backdrop-blur-[2px]">
+        {overlay}
+      </div>
+    </div>
+  );
 }
 
 export default function MyListActions(props: MyListActionsProps) {
@@ -46,13 +61,10 @@ export default function MyListActions(props: MyListActionsProps) {
 
   const [loadState, setLoadState] = React.useState<LoadState>('idle');
   const [loadError, setLoadError] = React.useState<string | null>(null);
-
   const [state, setState] = React.useState<MovieStateRow>(intitialMovieStateRow);
   const [pending, setPending] = React.useState(false);
-  const opIdRef = React.useRef(0);
 
   React.useEffect(() => {
-   
     if (!userId) {
       setLoadState('idle');
       setLoadError(null);
@@ -61,76 +73,69 @@ export default function MyListActions(props: MyListActionsProps) {
     }
 
     let cancelled = false;
-    setLoadState('loading');
-    setLoadError(null);
 
-    (async () => {
+    async function load() {
+      setLoadState('loading');
+      setLoadError(null);
+
       try {
-        const row = await fetchMovieState(tmdbMovieId);
+        const row = await fetchMovieState(userId, tmdbMovieId);
         if (cancelled) return;
+
         setState(row);
         setLoadState('ready');
-      } catch (e: any) {
+      } catch (error: any) {
         if (cancelled) return;
-        setLoadError(e?.message ?? 'Failed to load');
+
+        setLoadError(error?.message ?? 'Failed to load');
         setLoadState('error');
       }
-    })();
+    }
+
+    void load();
 
     return () => {
       cancelled = true;
     };
   }, [userId, tmdbMovieId]);
 
-  const setFavorite = async (next: boolean) => {
+  const metadataPatch = React.useMemo<MovieStatePatch>(
+    () => ({
+      ...(props.title ? { title: props.title } : {}),
+      ...(props.poster_path !== undefined ? { poster_path: props.poster_path } : {}),
+      ...(props.release_date ? { release_date: props.release_date } : {}),
+    }),
+    [props.title, props.poster_path, props.release_date]
+  );
+
+  const updateMovieState = async (
+    patch: MovieStatePatch,
+    errorMessage: string
+  ) => {
     if (!userId || pending) return;
 
     setPending(true);
-    const opId = ++opIdRef.current;
 
     try {
-      await upsertMovieState(userId, tmdbMovieId, {
-        is_favorite: next,
-        ...(props.title ? { title: props.title } : {}),
-        ...(props.poster_path !== undefined ? { poster_path: props.poster_path } : {}),
-        ...(props.release_date ? { release_date: props.release_date } : {}),
+      await upsertMovieState({
+        userId,
+        tmdbMovieId,
+        patch: {
+          ...metadataPatch,
+          ...patch,
+        },
       });
 
-      if (opId === opIdRef.current) {
-        setState(s => ({ ...s, is_favorite: next }));
-      }
-    } catch (e: any) {
-      toast.error(e?.message ?? 'Failed to update favorite');
+      setState((current) => ({
+        ...current,
+        ...patch,
+      }));
+    } catch (error: any) {
+      toast.error(error?.message ?? errorMessage);
     } finally {
-      if (opId === opIdRef.current) setPending(false);
+      setPending(false);
     }
   };
-
-  const setWatchStatus = async (next: WatchStatus | null) => {
-    if (!userId || pending) return;
-
-    setPending(true);
-    const opId = ++opIdRef.current;
-
-    try {
-      await upsertMovieState(userId, tmdbMovieId, {
-        watch_status: next,
-        ...(props.title ? { title: props.title } : {}),
-        ...(props.poster_path !== undefined ? { poster_path: props.poster_path } : {}),
-        ...(props.release_date ? { release_date: props.release_date } : {}),
-      });
-
-      if (opId === opIdRef.current) {
-        setState(s => ({ ...s, watch_status: next }));
-      }
-    } catch (e: any) {
-      toast.error(e?.message ?? 'Failed to update watch status');
-    } finally {
-      if (opId === opIdRef.current) setPending(false);
-    }
-  };
-
-  const selectValue = state.watch_status ?? undefined;
 
   const baseControls = (
     <div className="flex items-center gap-2 p-2">
@@ -145,52 +150,63 @@ export default function MyListActions(props: MyListActionsProps) {
     </div>
   );
 
-  // not logged in => disabled controls, overlay sign-in CTA
   if (!userId) {
     return (
-      <div className="relative w-min rounded-md">
+      <DisabledOverlay
+        overlay={
+          <>
+            <Link className="font-semibold hover:underline" href="/login">
+              Sign in
+            </Link>
+            <span className="ml-2">to track movie</span>
+          </>
+        }
+      >
         {baseControls}
-        <div className="absolute inset-0 rounded-md backdrop-blur-[2px] bg-muted/50 flex items-center justify-center px-3 text-sm">
-          <Link className="font-semibold hover:underline" href="/login">
-            Sign in
-          </Link>
-          <span className="ml-2">to track movie</span>
-        </div>
-      </div>
+      </DisabledOverlay>
     );
   }
 
-  // logged in, loading or error => disabled controls, overlay message
   if (loadState === 'loading' || loadState === 'error') {
     return (
-      <div className="relative w-min rounded-md">
-        {baseControls}
-        <div className="absolute inset-0 rounded-md backdrop-blur-[2px] bg-muted/50 flex items-center justify-center px-3 text-sm">
-          {loadState === 'loading' ? (
+      <DisabledOverlay
+        overlay={
+          loadState === 'loading' ? (
             <span className="text-muted-foreground">Loading…</span>
           ) : (
             <span className="text-destructive">{loadError ?? 'Failed to load'}</span>
-          )}
-        </div>
-      </div>
+          )
+        }
+      >
+        {baseControls}
+      </DisabledOverlay>
     );
   }
 
-  //  ready
   return (
     <div className="flex items-center gap-2">
       <Button
         variant="outline"
         disabled={pending}
-        onClick={() => setFavorite(!state.is_favorite)}
+        onClick={() =>
+          updateMovieState(
+            { is_favorite: !state.is_favorite },
+            'Failed to update favorite'
+          )
+        }
       >
         <Heart fill={state.is_favorite ? 'red' : 'transparent'} />
       </Button>
 
       <Select
-        value={selectValue}
+        value={state.watch_status ?? undefined}
         disabled={pending}
-        onValueChange={(v) => setWatchStatus((v || null) as WatchStatus | null)}
+        onValueChange={(value) =>
+          updateMovieState(
+            { watch_status: (value || null) as WatchStatus | null },
+            'Failed to update watch status'
+          )
+        }
       >
         <SelectTrigger>
           <SelectValue placeholder="Select a watch status..." />

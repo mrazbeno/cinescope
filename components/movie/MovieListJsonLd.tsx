@@ -1,5 +1,6 @@
-import { getTMDBImage } from "@/lib/tmbd";
-import { TMDBMovieSummary } from "@/lib/TMDBTypes";
+
+import { getTMDBImage } from "@/lib/tmdbApi";
+import { TMDBMovieSummary } from "@/lib/tmdbTypes";
 
 export default async function MovieListJsonLd({targetURL}: {targetURL: string}) {
     const res = await fetch(targetURL, {
@@ -8,7 +9,7 @@ export default async function MovieListJsonLd({targetURL}: {targetURL: string}) 
     });
     const json = await res.json();
     const items: TMDBMovieSummary[] = (json?.results ?? []);
-    const site = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+    const site = process.env.NEXT_PUBLIC_APP_URL ?? "";
     const itemList = {
         "@context": "https://schema.org",
         "@type": "ItemList",

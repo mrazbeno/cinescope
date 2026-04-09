@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Paginator from "@/components/pagination/Paginator";
 import MovieGrid from "@/components/movie/MovieGridClient";
-import { TMDBListResponse } from "@/lib/TMDBTypes";
+import { TMDBListResponse } from "@/lib/tmdbTypes";
 
 export const revalidate = 300;
 
@@ -10,7 +10,7 @@ type MovieQueryResultsProps = {
   dataSource: string | (() => Promise<TMDBListResponse>);
 };
 
-async function getListResponse(
+async function fetchTMDBAPIWithCreds(
   dataSource: string | (() => Promise<TMDBListResponse>)
 ): Promise<TMDBListResponse> {
   if (typeof dataSource === "string") {
@@ -31,10 +31,26 @@ async function getListResponse(
   return dataSource();
 }
 
-export default async function MovieQueryResults({
+export default async function MovieQueryResultsComponent({
   dataSource,
 }: MovieQueryResultsProps) {
-  const response = await getListResponse(dataSource);
+
+  let errorFetching: boolean = false
+  let response: TMDBListResponse
+
+  try {
+    response = await fetchTMDBAPIWithCreds(dataSource);
+
+  } catch (error) {
+    response = {
+      page: 0,
+      results: [],
+      total_pages: 0,
+      total_results: 0,
+    }
+    errorFetching = true
+    console.error(error)
+  }
 
   return (
     <main className="flex flex-col w-full h-full min-h-0 justify-start items-stretch py-3 px-8 gap-3">
@@ -53,7 +69,7 @@ export default async function MovieQueryResults({
       </section>
 
       <section className="flex flex-col flex-1 min-h-0 w-full">
-        <MovieGrid results={response.results} />
+        <MovieGrid gridItems={response.results} errorFetching={errorFetching}/>
       </section>
 
       <section className="flex w-full justify-center shrink-0">

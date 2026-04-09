@@ -1,9 +1,7 @@
 import { Suspense } from "react"
 import { FeaturedCarouselClient } from "./CarouselClient"
-import { TMDBMovieSummary } from "@/lib/TMDBTypes"
-import { Skeleton } from "@/components/ui/skeleton"
 import { CarouselSkeleton } from "./CarouselSkeleton"
-import { getMovies } from "@/lib/utils"
+import { fetchTMDBAPIWithCreds } from "@/lib/tmdbApi"
 
 export const revalidate = 1800
 
@@ -15,8 +13,7 @@ type FeaturedCarouselProps = {
 }
 
 async function FeaturedCarouselContent(props: FeaturedCarouselProps) {
-  const movies = await getMovies(props.url, revalidate)
-  console.log("MOVIES:", props.labelText,  movies);
+  const movies = await fetchTMDBAPIWithCreds(props.url, revalidate)
   
   return (
     <FeaturedCarouselClient

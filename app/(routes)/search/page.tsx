@@ -24,7 +24,7 @@ export async function generateMetadata({ searchParams }: any): Promise<Metadata>
     const page = params.get("page") ?? "1";
     const title = query ? `Search: ${query} — Page ${page}` : `Search movies — Page ${page}`;
     const description = "Search movies by title and explore results with details.";
-    const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+    const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
     const canonical = base ? `${base}/search?${params.toString()}` : undefined;
 
     return {

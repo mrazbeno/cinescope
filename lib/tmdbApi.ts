@@ -1,8 +1,4 @@
-import { TMDBListResponse, TMDBMovieSummary } from "./TMDBTypes";
-
-type FetchTMDBMovieListOptions = {
-  revalidate?: number;
-};
+import { TMDBListResponse, TMDBMovieSummary, TMDBPosterSize } from "./tmdbTypes";
 
 function formatDate(date: Date): string {
   return date.toISOString().slice(0, 10);
@@ -80,9 +76,17 @@ export function getUpcomingMoviesUrl(page = 1, region?: string): string {
   );
 }
 
-export async function fetchTMDBMovieList(
+
+/**
+ * 
+ * @param url TMDB API target
+ * @param revalidate next cache revalidate
+ * @returns List of movies with details from the TMDB API
+ * @throws Error on not OK HTTP responses
+ */
+export async function fetchTMDBAPIWithCreds(
   url: string,
-  options?: FetchTMDBMovieListOptions
+  nextRevalidate?: number
 ): Promise<TMDBMovieSummary[]> {
   const init: RequestInit & { next?: { revalidate: number } } = {
     headers: {
@@ -91,16 +95,36 @@ export async function fetchTMDBMovieList(
     },
   };
 
-  if (options?.revalidate !== undefined) {
-    init.next = { revalidate: options.revalidate };
+  if (nextRevalidate !== undefined) {
+    init.next = { revalidate: nextRevalidate };
   }
 
   const res = await fetch(url, init);
 
-  if (!res.ok) return [];
+  if (!res.ok) throw new Error("Failed to fetch movies from TMDB.")
 
   const json = (await res.json()) as TMDBListResponse;
-  console.log("GET MOVIE:", url, json);
 
-  return json.results ?? [];
+  return json.results;
+}
+
+
+const IMAGE_BASE = 'https://image.tmdb.org/t/p/';
+
+export function getTMDBImage(
+  path: string | null,
+  size: TMDBPosterSize = 'w500'
+): string | null {
+  return path ? `${IMAGE_BASE}${size}${path}` : null;
+}
+
+
+const MOVIE_POSTER_PLACEHOLDER = "https://placehold.co/185x278/png";
+
+export function getMoviePosterSrc(
+  posterPath: string | null | undefined,
+  size: TMDBPosterSize = "w185"
+) {
+  if (!posterPath) return MOVIE_POSTER_PLACEHOLDER;
+  return getTMDBImage(posterPath, size) ?? MOVIE_POSTER_PLACEHOLDER;
 }
