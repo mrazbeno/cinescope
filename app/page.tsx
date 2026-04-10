@@ -28,20 +28,17 @@ export default function Page() {
 }
 
 export async function generateMetadata() {
-  const title = "CineScope — Discover movies";
+  const title = "Discover movies";
   const description = "Search and discover movies with filters, ratings, and details powered by TMDB.";
-  const url = process.env.NEXT_PUBLIC_APP_URL ?? "";
 
   return {
     title,
     description,
-    alternates: { canonical: url || "/" },
+    alternates: { canonical: "/" },
     openGraph: {
       title,
       description,
-      url,
-      type: "website",
-      siteName: "CineScope",
+      url: '/',
     },
     twitter: {
       card: "summary_large_image",

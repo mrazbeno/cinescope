@@ -2,9 +2,9 @@ import dotenv from "dotenv";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@supabase/supabase-js";
-import { TMDBMovieSummary } from "@/lib/tmdbTypes"
+import { TMDBListResponse, TMDBMovieSummary } from "@/lib/tmdbTypes"
 import { MovieStateRow, WatchStatus } from "@/lib/movieStateTypes";
-import { fetchTMDBAPIWithCreds } from "@/lib/tmdbApi";
+import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -124,7 +124,16 @@ async function getOrCreateUser(seedUser: SeedUser): Promise<{ id: string; email:
 
 async function fetchSeedMovies(): Promise<TMDBMovieSummary[]> {
   const lists = await Promise.all(
-    TMDB_SEED_URLS.map((url) => fetchTMDBAPIWithCreds(url))
+    TMDB_SEED_URLS.map(async (url) => {
+      const res = await fetchWithTmdbApiCreds(url);
+
+      if (!res.ok) {
+        throw new Error(`TMDB request failed: ${res.status} ${res.statusText}`);
+      }
+
+      const json = (await res.json()) as TMDBListResponse;
+      return json.results;
+    })
   );
 
   const merged = lists.flat();

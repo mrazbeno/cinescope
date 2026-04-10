@@ -20,7 +20,7 @@ type FeaturedCarouselClientProps = {
   movieSummaries: TMDBMovieSummary[]
 }
 
-export function FeaturedCarouselClient(props: FeaturedCarouselClientProps) {
+export function CarouselClient(props: FeaturedCarouselClientProps) {
   const autoplay = React.useMemo(
     () =>
       Autoplay({

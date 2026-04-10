@@ -1,25 +1,26 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import MovieGrid, { MovieGridItem } from "@/components/movie/MovieGridClient";
-import { fetchTMDBAPIWithCreds } from "@/lib/tmdbApi";
+import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi";
+import { TMDBListResponse, TMDBMovieSummary } from "@/lib/tmdbTypes";
 
 type Props = {
   title: string;
   url: string;
+  revalidate: number
 };
 
 const FEATURED_AMOUNT = 20;
 
-export const revalidate = 86400;
-
-export default async function FeaturedPanel({ title, url }: Props) {
+export default async function FeaturedPanel({ title, url, revalidate }: Props) {
   let gridItems: MovieGridItem[] = [];
   let errorFetching = false;
 
   try {
-    const response = await fetchTMDBAPIWithCreds(url, revalidate);
+    const fetchResp = (await fetchWithTmdbApiCreds(url, {next: {revalidate }})) 
+    const tmdbListResp = await fetchResp.json() as TMDBListResponse
 
-    gridItems = response.map((movie): MovieGridItem => {
+    gridItems = tmdbListResp.results.map((movie): MovieGridItem => {
         return {
           id: movie.id,
           poster_path: movie.poster_path,

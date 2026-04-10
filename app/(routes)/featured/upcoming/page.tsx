@@ -1,7 +1,9 @@
 import FeaturedPanel from '@/components/movie/FeaturedPanel';
 import MovieListJsonLd from '@/components/movie/MovieListJsonLd';
-import { getUpcomingMoviesUrl } from '@/lib/tmdbApi';
+import { getUpcomingMoviesUrl } from '@/lib/tmdbUtility';
 import type { Metadata } from 'next';
+
+export const revalidate: number= 8640
 
 export const metadata: Metadata = {
   description: "A list of the top upcoming movies.",
@@ -15,7 +17,7 @@ export default async function MyPage() {
   return (
     <>
       <MovieListJsonLd targetURL={url} />
-      <FeaturedPanel title="Upcoming" url={url} />
+      <FeaturedPanel title="Upcoming" url={url} revalidate={revalidate} />
     </>
   );
 }

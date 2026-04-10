@@ -14,14 +14,20 @@ export default function MovieGridReveal({
     children,
     skeleton,
 }: Props) {
-    const expectedKeySignature = React.useMemo(
-        () => expectedKeys.slice().sort().join("|"),
+
+    const sortedExpectedKeys = React.useMemo(
+        () => expectedKeys.slice().sort(),
         [expectedKeys]
     );
 
+    const expectedKeySignature = React.useMemo(
+        () => sortedExpectedKeys.join("|"),
+        [sortedExpectedKeys]
+    );
+
     const expectedKeySet = React.useMemo(
-        () => new Set(expectedKeys),
-        [expectedKeySignature]
+        () => new Set(sortedExpectedKeys),
+        [sortedExpectedKeys]
     );
 
     const [ready, setReady] = React.useState<Set<string>>(new Set());

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import MoviePosterHoverOverlay from "../movie/MoviePosterHoverOverlay.client";
 import MoviePosterLink from "../movie/MoviePosterLink.client";
-import { getMoviePosterSrc } from "@/lib/tmdbApi";
+import { getMoviePosterSrc } from "@/lib/tmdbUtility";
 
 type CarouselPosterProps = {
   id: number;

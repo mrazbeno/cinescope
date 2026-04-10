@@ -16,7 +16,7 @@ import MoviePosterLink from "./MoviePosterLink.client";
 import MoviePosterHoverOverlay from "./MoviePosterHoverOverlay.client";
 
 import { WatchStatus } from "@/lib/movieStateTypes";
-import { getMoviePosterSrc } from "@/lib/tmdbApi";
+import { getMoviePosterSrc } from "@/lib/tmdbUtility";
 import type { TMDBPosterSize } from "@/lib/tmdbTypes";
 
 type Props = {
