@@ -14,17 +14,21 @@ Users can create accounts (via Supabase) to manage a personal movie collection, 
 - TMDB API
 
 ## Features
-- Movie search with debounced queries
-- Advanced discover filters (region, sorting, etc.)
-- Personal movie collection (authenticated users)
-- Regional featured movies carousel
-- Paginated results
-- Detailed movie pages with rich metadata
+   - Movie search with debounced queries
+   - Discover browsing with advanced filters and sorting
+   - Regional featured movie sections
+   - Paginated search and discover results
+   - Detailed movie pages with rich metadata
+   - Authenticated personal catalog for saving favorites and watch statuses
+   - Email-based authentication flow via Supabase
 
 ## Quick Start
 
+### Prerequisites
+   - Node.js installed
+   - Docker running locally
 
-### Core
+### Environment setup
 
 1. Clone this repository.
 
@@ -35,29 +39,27 @@ Users can create accounts (via Supabase) to manage a personal movie collection, 
 
 ### Local database setup
 
-0. Ensure Docker is running.
-
-1. Run:
+1. Initialize the local Supabase environment:
 
 ```bash
 npm run db:init
 ```
 
-2. Copy the local Supabase URL and Secret auth key into `.env.local` (sb_secret_...)
+2. Copy the generated local Supabase URL and secret auth key into `.env.local`.
 
-3. (Optional) Seed 3 users with movies into the db with:
+3. (Optional) Seed the database with sample users and movie entries:
 ```bash
 npm run db:seed
 ```
 
-### Finally
+### Run the app
 
-1. Start dev server with:
+1. Start the development server:
 ```bash
 npm run dev
 ```
 
-2. Open `http://localhost:3000`.
+2. Then open: `http://localhost:3000`.
 
 ## Demo
 A live demo is available [here](https://cinescope-demo.vercel.app). It is hosted on Vercel and Supabase.
@@ -65,7 +67,7 @@ A live demo is available [here](https://cinescope-demo.vercel.app). It is hosted
 The demo is set to the US region (ISO 3166-1) for regional movie sets.
 
 ## About
-This project was built to explore full-stack development with authentication, external APIs, and modern React patterns using Next.js.
+This project was built as a full-stack movie app combining TMDB-powered discovery, authenticated personal catalog features, and SEO-friendly public pages, while also exploring SEO patterns and content discoverability in Next.js.
 
 ## Status
 This project is feature-complete and no longer actively developed.
