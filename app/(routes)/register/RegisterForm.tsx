@@ -28,6 +28,7 @@ const RegisterForm = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // TODO: more granular Supabase error/response handling
   const onSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (loading) return;

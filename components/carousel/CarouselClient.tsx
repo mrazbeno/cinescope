@@ -7,7 +7,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel"
-import { TMDBMovieSummary } from "@/lib/TMDBTypes"
+import { TMDBMovieSummary } from "@/lib/tmdbTypes"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ArrowUp, ArrowDown } from "lucide-react"
 import clsx from "clsx"
@@ -20,7 +20,7 @@ type FeaturedCarouselClientProps = {
   movieSummaries: TMDBMovieSummary[]
 }
 
-export function FeaturedCarouselClient(props: FeaturedCarouselClientProps) {
+export function CarouselClient(props: FeaturedCarouselClientProps) {
   const autoplay = React.useMemo(
     () =>
       Autoplay({

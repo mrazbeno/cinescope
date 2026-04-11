@@ -1,7 +1,9 @@
 import FeaturedPanel from '@/components/movie/FeaturedPanel';
 import MovieListJsonLd from '@/components/movie/MovieListJsonLd';
-import { getNowPlayingMoviesUrl } from '@/lib/tmdbApi';
+import { getNowPlayingMoviesUrl } from '@/lib/tmdbUtility';
 import type { Metadata } from 'next';
+
+export const revalidate: number= 86400
 
 export const metadata: Metadata = {
   description: "A list of the best, currently playing movies.",
@@ -15,7 +17,7 @@ export default async function MyPage() {
   return (
     <>
       <MovieListJsonLd targetURL={url} />
-      <FeaturedPanel title="Now Playing" url={url} />
+      <FeaturedPanel title="Now Playing" url={url} revalidate={revalidate} />
     </>
   );
 }

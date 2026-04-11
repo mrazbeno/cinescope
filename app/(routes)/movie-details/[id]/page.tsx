@@ -1,13 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import MoviePoster from "@/components/movie/MoviePosterClientCard";
-import { TMDBMovieDetail, TMDBMovieCreditsResponse } from "@/lib/TMDBTypes";
+import { TMDBMovieDetail, TMDBMovieCreditsResponse } from "@/lib/tmdbTypes";
 import { Badge } from "@/components/ui/badge";
-import { getTMDBImage } from "@/lib/tmbd";
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next"
 import MyListActions from "./MyListActions";
+import { getTMDBImage } from "@/lib/tmdbUtility";
+import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi";
+
+export const revalidate: number = 86400;
 
 // Utility: get unique names
 function uniqueNames(list: { name: string }[]): string[] {
@@ -22,19 +25,17 @@ function uniqueNames(list: { name: string }[]): string[] {
     return result;
 }
 
-export const revalidate = 86400;
+async function getMovieDetailsWithCredits(
+    id: string
+): Promise<TMDBMovieDetail & { credits: TMDBMovieCreditsResponse; }> {
 
-async function getMovie(id: string) {
-    const res = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}?append_to_response=credits`,
-        {
-            headers: { Authorization: `Bearer ${process.env.TMDB_API_READ_TOKEN!}` },
-            next: { revalidate: 86400 },
-        }
-    );
+    const url = `https://api.themoviedb.org/3/movie/${id}?append_to_response=credits`
 
-    if (!res.ok) throw new Error("Failed movie fetch");
-    return res.json();
+    const fetchResp = (await fetchWithTmdbApiCreds(url, { next: { revalidate } }))
+
+    if (!fetchResp.ok) throw new Error("Failed to fetch movie details");
+
+    return await fetchResp.json()
 }
 
 function ButtonLink(
@@ -53,30 +54,31 @@ function ButtonLink(
     );
 }
 
+type Props = {
+    params: Promise<{ id: string }>;
+};
 export async function generateMetadata(
-    { params }: any
+    { params }: Props
 ): Promise<Metadata> {
 
     const movieId = (await params).id
 
-    const res = await fetch(
-        `https://api.themoviedb.org/3/movie/${movieId}`,
-        {
-            headers: { Authorization: `Bearer ${process.env.TMDB_API_READ_TOKEN!}` },
-            next: { revalidate: 86400 }
-        }
-    )
+    const res = await fetchWithTmdbApiCreds(`https://api.themoviedb.org/3/movie/${movieId}`, { next: { revalidate } })
 
-    if (!res.ok) return {}
+    if (!res.ok)
+        return {
+            title: "Movie",
+            description: "Explore movie details, cast, and ratings on CineScope.",
+            alternates: { canonical: `/movie-details/${movieId}` },
+        };
 
-    const movie = await res.json()
+    const movie = await res.json() as TMDBMovieDetail
 
     const title = movie.title ?? "Movie"
-    const description = movie.overview
+    const description = movie.overview || `Explore details, cast, and ratings for ${title}.`;
     const poster = getTMDBImage(movie.poster_path, "w780")
 
-    const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-    const canonical = base ? `${base}/movie-details/${movieId}` : undefined;
+    const canonical = `/movie-details/${movieId}`
 
     return {
         title: `${title} (${movie.release_date?.slice(0, 4)})`,
@@ -109,9 +111,9 @@ export default async function Page({ params }: any) {
     let credits: TMDBMovieCreditsResponse | null = null;
 
     try {
-        const resp = await getMovie(movieId);
-        detail = resp as TMDBMovieDetail;
-        credits = resp.credits as TMDBMovieCreditsResponse;
+        const detResp = await getMovieDetailsWithCredits(movieId);
+        detail = detResp
+        credits = detResp.credits;
     } catch {
         return <main className="p-4">Failed to load movie data.</main>;
     }
@@ -387,7 +389,7 @@ export default async function Page({ params }: any) {
                                     )}
 
                                     {detail?.imdb_id && (
-                                        <ButtonLink href={`https://www.imdb.com/title/${detail.imdb_id}`} variant="outline" size="sm">
+                                        <ButtonLink target="_blank" href={`https://www.imdb.com/title/${detail.imdb_id}`} variant="outline" size="sm">
                                             IMDb
                                         </ButtonLink>
                                     )}

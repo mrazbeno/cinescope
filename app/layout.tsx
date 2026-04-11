@@ -6,7 +6,7 @@ import type { Metadata } from "next"
 import HeaderBar from "@/components/common/HeaderBar"
 import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils";
-import { getNowPlayingMoviesUrl, getPopularMoviesUrl, getTopRatedMoviesUrl, getUpcomingMoviesUrl } from "@/lib/tmdbApi"
+import { getNowPlayingMoviesUrl, getPopularMoviesUrl, getTopRatedMoviesUrl, getUpcomingMoviesUrl } from "@/lib/tmdbUtility"
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -15,10 +15,19 @@ const fontMono = Geist_Mono({
   variable: "--font-mono",
 })
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
-  title: { default: "CineScope - Movie Explorer", template: "%s | CineScope" },
-  description: "Discover details, casts and ratings for your favourite movies.",
+  metadataBase: new URL(SITE_URL),
+
+  title: {
+    default: "CineScope",
+    template: "%s | CineScope",
+  },
+
+  description: "Discover movies, explore cast, ratings, and details, and keep track of what you want to watch.",
+
+  applicationName: "CineScope",
 
   icons: {
     icon: "/favicon.ico",
@@ -26,24 +35,32 @@ export const metadata: Metadata = {
 
   openGraph: {
     type: "website",
-    siteName: "CineScope - Movie Explorer",
+    siteName: "CineScope",
     locale: "en_US",
-    images: ["/seo/og-main.jpeg"],
+    images: [
+      {
+        url: "/seo/og-main.jpeg",
+        alt: "CineScope",
+      },
+    ],
   },
+
   twitter: {
     card: "summary_large_image",
-    images: ["/seo/og-main.jpeg"],
+    images: [
+      {
+        url: "/seo/og-main.jpeg",
+        alt: "CineScope",
+      },
+    ],
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-
-
-
 
   return (
     <html lang="en-US" suppressHydrationWarning className={cn("font-sans", geist.variable)}>

@@ -43,7 +43,6 @@ function GenreSelector({
         "h-auto flex-1 flex flex-col",
         disabled ? "opacity-70 pointer-events-none" : "",
       ].join(" ")}
-      aria-disabled={disabled}
     >
       <div className="font-normal whitespace-nowrap mb-2">
         <div className="flex flex-row justify-between">

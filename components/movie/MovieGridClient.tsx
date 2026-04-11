@@ -3,34 +3,48 @@
 import * as React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import MoviePoster from "@/components/movie/MoviePosterClientCard";
-import { WatchStatus } from "@/lib/movieStates";
+import { WatchStatus } from "@/lib/movieStateTypes";
 
-type MovieGridMovie = {
+
+export type MovieGridItem = {
   id: number;
-  poster_path: string | null;
   title: string;
-};
-
-type MyListDetails = {
-  status?: WatchStatus;
-  isFav: boolean;
+  poster_path: string | null;
+  is_favorite?: boolean;
+  watch_status?: WatchStatus;
 };
 
 type MovieGridClientProps = {
-  results: MovieGridMovie[];
-  myListDetails?: MyListDetails[];
+  gridItems: MovieGridItem[];
   showPlacement?: boolean;
+  errorFetching?: boolean;
+  onRetry?: () => void;
 };
 
 const GRID_TEMPLATE = "repeat(auto-fill,minmax(160px,1fr))";
 
 export default function MovieGridClient({
-  results,
-  myListDetails,
+  gridItems,
   showPlacement = false,
+  errorFetching = false,
+  onRetry,
 }: MovieGridClientProps) {
-  if (results.length === 0) {
+  if (errorFetching) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-md border p-8 text-muted-foreground">
+        <div>Failed to load movies.</div>
+        {onRetry && (
+          <Button type="button" variant="outline" onClick={onRetry}>
+            Try again
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  if (gridItems.length === 0) {
     return (
       <div className="flex flex-1 items-center justify-center rounded-md border p-8 text-sm text-muted-foreground">
         No movies found.
@@ -44,20 +58,22 @@ export default function MovieGridClient({
         className="grid gap-4 p-4"
         style={{ gridTemplateColumns: GRID_TEMPLATE }}
       >
-        {results.map((movie, i) => (
-          <MoviePoster
-            key={movie.id}
-            id={movie.id}
-            posterPath={movie.poster_path}
-            title={movie.title}
-            href={`/movie-details/${movie.id}`}
-            posterSize="w342"
-            revealMode="immediate"
-            placement={showPlacement ? i + 1 : undefined}
-            isFavorite={myListDetails?.[i]?.isFav}
-            watchStatus={myListDetails?.[i]?.status}
-          />
-        ))}
+        {gridItems.map((movie, i) => {
+          return (
+            <MoviePoster
+              key={movie.id}
+              id={movie.id}
+              posterPath={movie.poster_path}
+              title={movie.title}
+              href={`/movie-details/${movie.id}`}
+              posterSize="w342"
+              revealMode="immediate"
+              placement={showPlacement ? i + 1 : undefined}
+              isFavorite={movie.is_favorite}
+              watchStatus={movie.watch_status}
+            />
+          );
+        })}
       </div>
     </ScrollArea>
   );

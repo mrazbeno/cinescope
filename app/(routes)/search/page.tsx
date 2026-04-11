@@ -4,7 +4,7 @@ import { buildQueryString } from "@/lib/utils";
 import type { Metadata } from "next";
 
 type Props = {
-    searchParams: Record<string, string | string[] | undefined>;
+    searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function MyPage({ searchParams }: any) {
@@ -18,22 +18,30 @@ export default async function MyPage({ searchParams }: any) {
     );
 }
 
-export async function generateMetadata({ searchParams }: any): Promise<Metadata> {
-    const params = await buildQueryString(searchParams);
-    const query = params.get("query") ?? "";
-    const page = params.get("page") ?? "1";
-    const title = query ? `Search: ${query} — Page ${page}` : `Search movies — Page ${page}`;
-    const description = "Search movies by title and explore results with details.";
-    const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-    const canonical = base ? `${base}/search?${params.toString()}` : undefined;
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const params = await buildQueryString(searchParams);
 
-    return {
-        title,
-        description,
-        alternates: { canonical },
-        robots: {
-            index: false,
-            follow: true
-        }
-    };
+  const query = params.get("query") ?? "";
+  const page = params.get("page") ?? "1";
+
+  const title = query
+    ? `Search: ${query} — Page ${page}`
+    : `Search movies — Page ${page}`;
+
+  const description = "Search movies by title and explore results with details.";
+
+  const qs = params.toString();
+  const canonical = qs ? `/search?${qs}` : "/search";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    robots: {
+      index: false,
+      follow: true,
+    },
+  };
 }

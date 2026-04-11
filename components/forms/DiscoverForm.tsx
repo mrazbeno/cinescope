@@ -25,7 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { cn, flattenObject } from "@/lib/utils";
-import { sortByOptions } from "@/lib/TMDBTypes";
+import { sortByOptions } from "@/lib/tmdbTypes";
 import { ComboboxField } from "../util/ComboBoxField";
 import { Option } from "../util/ComboBoxField";
 import GenreSelector from "./GenreSelector";

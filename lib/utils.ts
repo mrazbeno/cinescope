@@ -1,7 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { TMDBMovieSummary } from "./TMDBTypes";
-import { fetchTMDBMovieList } from "@/lib/tmdbApi";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -36,11 +34,4 @@ export async function buildQueryString(
       Array.isArray(value) ? value.map((v) => [key, v]) : value ? [[key, value]] : []
     )
   );
-}
-
-export async function getMovies(
-  url: string,
-  revalidate: number
-): Promise<TMDBMovieSummary[]> {
-  return fetchTMDBMovieList(url, { revalidate });
 }

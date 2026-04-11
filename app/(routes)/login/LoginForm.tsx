@@ -27,6 +27,7 @@ const LoginForm = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // TODO: more granular Supabase error/response handling
   const onLoginAttempt = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (loading) return;
@@ -38,6 +39,8 @@ const LoginForm = ({
       const res = await supabase.auth.signInWithPassword({ email, password });
 
       if (res.error) {
+        console.log(res);
+        
         setError(res.error.message || "Invalid credentials");
         return;
       }

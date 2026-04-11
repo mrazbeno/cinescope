@@ -1,21 +1,39 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import MovieGrid from "@/components/movie/MovieGridClient";
-import { getMovies } from "@/lib/utils";
+import MovieGrid, { MovieGridItem } from "@/components/movie/MovieGridClient";
+import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi";
+import { TMDBListResponse, TMDBMovieSummary } from "@/lib/tmdbTypes";
 
 type Props = {
   title: string;
   url: string;
+  revalidate: number
 };
 
 const FEATURED_AMOUNT = 20;
 
-export const revalidate = 86400;
+export default async function FeaturedPanel({ title, url, revalidate }: Props) {
+  let gridItems: MovieGridItem[] = [];
+  let errorFetching = false;
 
-export default async function FeaturedPanel({ title, url }: Props) {
-  const results = await getMovies(url, revalidate);
+  try {
+    const fetchResp = (await fetchWithTmdbApiCreds(url, {next: {revalidate }})) 
+    const tmdbListResp = await fetchResp.json() as TMDBListResponse
 
-  console.log("Upcoming movies: ", results)
+    gridItems = tmdbListResp.results.map((movie): MovieGridItem => {
+        return {
+          id: movie.id,
+          poster_path: movie.poster_path,
+          title: movie.title,
+        };
+      })
+      
+    gridItems = gridItems.slice(0, FEATURED_AMOUNT);
+
+  } catch (error) {
+    console.error(error);
+    errorFetching = true;
+  }
 
   return (
     <main className="flex flex-col w-full h-full min-h-0 justify-start items-stretch py-3 px-8 gap-3">
@@ -34,7 +52,11 @@ export default async function FeaturedPanel({ title, url }: Props) {
       </section>
 
       <section className="flex flex-col flex-1 min-h-0 w-full">
-        <MovieGrid results={results.slice(0, FEATURED_AMOUNT)} showPlacement />
+        <MovieGrid
+          gridItems={gridItems}
+          showPlacement
+          errorFetching={errorFetching}
+        />
       </section>
     </main>
   );
