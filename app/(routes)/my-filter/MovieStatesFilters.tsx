@@ -21,7 +21,7 @@ export function MovieStatesFilters({
 }: Props) {
     return (
         <section className="flex flex-col gap-4 w-full">
-            <header className="text-lg font-medium">Filter your list</header>
+            <header className="text-lg font-medium">Filter your catalog</header>
 
             <div className="flex flex-col gap-2">
                 <Label>Included statuses for movies</Label>
