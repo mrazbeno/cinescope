@@ -8,7 +8,7 @@ import Image from "next/image";
 import type { Metadata } from "next"
 import MyListActions from "./MyListActions";
 import { getTMDBImage } from "@/lib/tmdbUtility";
-import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi";
+import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi.server";
 
 export const revalidate: number = 86400;
 

@@ -1,4 +1,3 @@
-import "server-only";
 
 /**
  * Wrapper around fetch that adds TMDB auth token in header

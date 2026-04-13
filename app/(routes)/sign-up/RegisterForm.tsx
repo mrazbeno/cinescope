@@ -7,47 +7,62 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabaseBrowser";
 
-export interface LoginFormProps {
+export interface RegisterFormProps {
   heading?: string;
   buttonText?: string;
   signupText?: string;
   signupUrl?: string;
 }
 
-const LoginForm = ({
+const RegisterForm = ({
   heading,
-  buttonText = "Sign in",
+  buttonText = "Create account",
   signupText,
   signupUrl,
-}: LoginFormProps) => {
+}: RegisterFormProps) => {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // TODO: more granular Supabase error/response handling
-  const onLoginAttempt = async (e?: React.FormEvent) => {
+  const onSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (loading) return;
 
-    setLoading(true);
     setError(null);
 
+    if (password !== confirm) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      const res = await supabase.auth.signInWithPassword({ email, password });
+      const baseURL =
+        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const emailRedirectTo = new URL(`${baseURL}/email-confirmed`).toString();
+
+      const res = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo,
+        },
+      });
 
       if (res.error) {
-        console.log(res);
-        
-        setError(res.error.message || "Invalid credentials");
+        setError(res.error.message || "Registration failed");
         return;
       }
 
-      router.push("/my-filter");
+      router.push("/verify-email");
     } catch {
-      setError("Sign in failed");
+      setError("Server error");
     } finally {
       setLoading(false);
     }
@@ -57,19 +72,21 @@ const LoginForm = ({
     <div className="flex h-full items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-6">
         <div className="flex flex-row items-end gap-2">
-          <h1 className="text-3xl">CineScope</h1> - Find your next watch
+          <h1 className="text-3xl">CineScope</h1> - find your next watch
         </div>
 
         <form
-          onSubmit={onLoginAttempt}
+          onSubmit={onSubmit}
           className="relative min-w-sm flex w-full max-w-sm flex-col items-center gap-y-4 rounded-md border-none px-6 py-8"
           aria-busy={loading}
+          noValidate={false}
         >
           <fieldset
             disabled={loading}
             className="flex w-full flex-col items-center gap-y-4 disabled:opacity-70"
           >
             {heading && <h1 className="text-xl font-semibold">{heading}</h1>}
+
 
             <div className="w-full space-y-2">
               <label htmlFor="email" className="block text-sm font-medium">
@@ -79,12 +96,10 @@ const LoginForm = ({
                 id="email"
                 type="email"
                 placeholder="you@example.com"
-                className="text-sm"
                 required
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                aria-describedby={error ? "login-form-error" : undefined}
               />
             </div>
 
@@ -96,18 +111,31 @@ const LoginForm = ({
                 id="password"
                 type="password"
                 placeholder="Enter your password"
-                className="text-sm"
                 required
-                autoComplete="current-password"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                aria-describedby={error ? "login-form-error" : undefined}
+              />
+            </div>
+
+            <div className="w-full space-y-2">
+              <label htmlFor="confirm" className="block text-sm font-medium">
+                Confirm password
+              </label>
+              <Input
+                id="confirm"
+                type="password"
+                placeholder="Re-enter your password"
+                required
+                autoComplete="new-password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
               />
             </div>
 
             {error && (
               <div
-                id="login-form-error"
+                id="register-form-error"
                 className="w-full text-sm text-destructive"
                 role="alert"
               >
@@ -116,7 +144,7 @@ const LoginForm = ({
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in..." : buttonText}
+              {loading ? "Creating..." : buttonText}
             </Button>
           </fieldset>
         </form>
@@ -132,10 +160,10 @@ const LoginForm = ({
                 loading ? "pointer-events-none opacity-50" : "",
               ].join(" ")}
             >
-              Sign up
+              Sign in
             </Link>
           ) : (
-            <span className="font-medium text-primary">Sign up</span>
+            <span className="font-medium text-primary">Sign in</span>
           )}
         </div>
       </div>
@@ -143,4 +171,4 @@ const LoginForm = ({
   );
 };
 
-export default LoginForm;
+export default RegisterForm;
