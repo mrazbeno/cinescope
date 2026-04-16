@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { CarouselClient } from "./CarouselClient"
 import { CarouselSkeleton } from "./CarouselSkeleton"
-import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi"
+import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi.server"
 import { TMDBListResponse } from "@/lib/tmdbTypes"
 
 export const revalidate = 1800

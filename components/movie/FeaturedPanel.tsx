@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import MovieGrid, { MovieGridItem } from "@/components/movie/MovieGridClient";
-import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi";
+import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi.server";
 import { TMDBListResponse, TMDBMovieSummary } from "@/lib/tmdbTypes";
 
 type Props = {

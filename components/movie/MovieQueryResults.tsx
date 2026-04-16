@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import Paginator from "@/components/pagination/Paginator";
 import MovieGrid from "@/components/movie/MovieGridClient";
 import { TMDBListResponse } from "@/lib/tmdbTypes";
-import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi";
+import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi.server";
 
 export const revalidate = 300;
 

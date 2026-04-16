@@ -1,6 +1,6 @@
 import { TMDBMovieSummary, TMDBListResponse } from "@/lib/tmdbTypes";
 import { getTMDBImage } from "@/lib/tmdbUtility";
-import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi";
+import { fetchWithTmdbApiCreds } from "@/lib/tmdbApi.server";
 
 function getAppBaseUrl(): string | undefined {
   return process.env.NEXT_PUBLIC_APP_URL || undefined;

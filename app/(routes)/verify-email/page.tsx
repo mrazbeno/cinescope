@@ -29,7 +29,7 @@ export default function VerifyEmailPage() {
 
         <div className="flex flex-col gap-2 pt-2">
           <Button asChild>
-            <Link href="/login">Go to login</Link>
+            <Link href="/sign-in">Go to sign in</Link>
           </Button>
           <Button asChild variant="outline">
             <Link href="/">Back to Home</Link>

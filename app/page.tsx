@@ -28,21 +28,17 @@ export default function Page() {
 }
 
 export async function generateMetadata() {
-  const title = "Discover movies";
   const description = "Search and discover movies with filters, ratings, and details powered by TMDB.";
 
   return {
-    title,
     description,
     alternates: { canonical: "/" },
     openGraph: {
-      title,
       description,
       url: '/',
     },
     twitter: {
       card: "summary_large_image",
-      title,
       description,
     },
   };

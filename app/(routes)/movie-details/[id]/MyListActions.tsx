@@ -155,7 +155,7 @@ export default function MyListActions(props: MyListActionsProps) {
       <DisabledOverlay
         overlay={
           <>
-            <Link className="font-semibold hover:underline" href="/login">
+            <Link className="font-semibold hover:underline" href="/sign-in">
               Sign in
             </Link>
             <span className="ml-2">to track movie</span>

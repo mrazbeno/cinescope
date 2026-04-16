@@ -30,19 +30,19 @@ export default function SessionStatus() {
       return;
     }
 
-    router.push("/");
+    router.refresh()
   }
 
   return (
     <>
       {auth.session === null ? (
         <div className="flex h-full justify-center items-center gap-2 flex-row">
-          <Link className="hover:underline hover:cursor-pointer" href="/login">
-            Login
+          <Link className="hover:underline hover:cursor-pointer text-sm" href="/sign-in">
+            Sign In
           </Link>
           <div className="pointer-events-none">/</div>
-          <Link className="hover:underline hover:cursor-pointer" href="/register">
-            Register
+          <Link className="hover:underline hover:cursor-pointer text-sm" href="/sign-up">
+            Sign Up
           </Link>
         </div>
       ) : (

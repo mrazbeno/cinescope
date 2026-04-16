@@ -45,9 +45,9 @@ type MovieStatusInsert = MovieStateRow & {
 };
 
 const DEMO_USERS: SeedUser[] = [
-  { email: "demo1@local.dev", password: "Password123!" },
-  { email: "demo2@local.dev", password: "Password123!" },
-  { email: "demo3@local.dev", password: "Password123!" },
+  { email: "a@a.a", password: "123123123" },
+  { email: "b@b.b", password: "123123123" },
+  { email: "c@c.c", password: "123123123" },
 ];
 
 const TMDB_SEED_URLS = [

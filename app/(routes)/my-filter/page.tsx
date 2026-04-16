@@ -51,7 +51,7 @@ export default function MyPage() {
   }, [appliedFilter]);
 
   React.useEffect(() => {
-    if (!auth.loading && !auth.user) router.replace('/login');
+    if (!auth.loading && !auth.user) router.replace('/sign-in');
   }, [auth.loading, auth.user, router]);
 
   React.useEffect(() => {
